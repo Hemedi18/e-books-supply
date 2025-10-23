@@ -24,7 +24,11 @@
                 <h2>{{ book.title }}</h2>
                 <p>by {{ book.author }}</p>
             </div>
-            <!-- You can add a request button here later if needed -->
+            <!-- Download button for the actual book file -->
+            {% if book.book_file %}
+                <a href="{{ book.book_file.url }}" class="download-button" download>Download Book</a>
+            {% endif %}
+            
         </div>
     {% empty %}
         <p>No books are available at the moment.</p>

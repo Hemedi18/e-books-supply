@@ -1,0 +1,16 @@
+[Unit]
+Description=gunicorn daemon for boooks project
+After=network.target
+
+[Service]
+User=hacker
+Group=www-data
+WorkingDirectory=/home/hacker/Desktop/boooks
+ExecStart=/home/hacker/Desktop/boooks/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          books.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

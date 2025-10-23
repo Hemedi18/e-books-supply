@@ -1,0 +1,22 @@
+server {
+    listen 80;
+    server_name your_domain.com www.your_domain.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    # Serve static files directly
+    location /static/ {
+        root /home/hacker/Desktop/boooks;
+    }
+
+    # Serve media files directly
+    location /media/ {
+        root /home/hacker/Desktop/boooks;
+    }
+
+    # Proxy requests to Gunicorn
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}

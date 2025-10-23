@@ -1,0 +1,33 @@
+{% extends "books_app/base.html" %}
+
+
+{% block title %}Home - eBooks{% endblock %}
+
+{% block content %}
+  <h1>Books you may be interested in</h1>
+  <p>This is the home page.</p>
+
+  <!-- This is the grid container -->
+  <div class="book-grid">
+    {% for book in books %}
+        <!-- This is the new book item card -->
+        <div class="book-item">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="Cover for {{ book.title }}" class="book-cover">
+            {% else %}
+                <!-- Placeholder for books without an image -->
+                <div class="book-cover" style="background-color: #e9ecef; display: flex; align-items: center; justify-content: center;">
+                    <span>No Image</span>
+                </div>
+            {% endif %}
+            <div class="book-details">
+                <h2>{{ book.title }}</h2>
+                <p>by {{ book.author }}</p>
+            </div>
+            <!-- You can add a request button here later if needed -->
+        </div>
+    {% empty %}
+        <p>No books are available at the moment.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}eBooks{% endblock %}</title>
+  
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body data-theme="light"> 
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="{% url 'books_app:home' %}">eBooks</a>
+        
+        <div class="header-actions">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="sun-icon">☀️</span>
+                <span class="moon-icon" style="display:none;">🌙</span>
+            </button>
+            
+            <button id="mobile-nav-toggle" class="hamburger" aria-label="toggle navigation" aria-expanded="false">
+                ☰
+            </button>
+        </div>
+
+        <nav class="main-nav" aria-label="Main navigation">
+            <ul>
+                <li style="--delay: 0.1s;"><a href="{% url 'books_app:home' %}">Home</a></li>
+                <li style="--delay: 0.2s;"><a href="{% url 'books_app:request_book' %}">Request / Order</a></li>
+                <li style="--delay: 0.3s;"><a href="{% url 'books_app:about' %}">About</a></li>
+                <li style="--delay: 0.4s;"><a href="{% url 'books_app:help' %}">Help</a></li>
+                <li style="--delay: 0.5s;"><a href="{% url 'books_app:contact' %}">Contact</a></li>
+                <li style="--delay: 0.6s;"><a href="{% url 'books_app:account' %}">Account</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <p>© {{ now|date:"Y" }} eBooks — Simple, fast, local.</p>
+        <nav>
+            <a href="{% url 'books_app:about' %}">About</a>
+            <a href="#">Help</a>
+            <a href="#">Contact</a>
+        </nav>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

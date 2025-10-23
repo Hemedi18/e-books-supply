@@ -1,0 +1,6 @@
+{% if user.is_authenticated %}
+<li><a href="{% url 'books_app:account' %}">Account</a></li>
+<li><a href="{% url 'books_app:logout' %}">Logout</a></li>
+{% else %}
+<li><a href="{% url 'books_app:login' %}">Login</a></li>
+{% endif %}

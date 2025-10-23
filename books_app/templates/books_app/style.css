@@ -1,0 +1,80 @@
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Grid container for the books */
+.book-grid {
+    display: grid;
+    /* Create a responsive grid: columns are between 200px and 1fr wide */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Individual book card styling */
+.book-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Ensures the image corners are rounded */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Styling for the cover image */
+.book-cover-image {
+    width: 100%;
+    /* This ensures the image maintains its aspect ratio while filling the space */
+    aspect-ratio: 2 / 3;
+    /* This crops the image to fit, rather than stretching or squishing it */
+    object-fit: cover;
+}
+
+/* Placeholder for when there is no image */
+.placeholder-image {
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-weight: bold;
+}
+
+/* Container for the book's text info */
+.book-info {
+    padding: 15px;
+    text-align: center;
+    /* Allows the card to grow but the info to stay at the bottom */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.book-title {
+    font-size: 1rem;
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.book-author {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+}

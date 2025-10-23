@@ -1,0 +1,49 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}My Account - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>My Account</h2>
+
+    <!-- Tab links -->
+    <div class="account-tabs">
+        <button class="tab-link active" onclick="openTab(event, 'Profile')">Profile Details</button>
+        <button class="tab-link" onclick="openTab(event, 'Password')">Change Password</button>
+    </div>
+
+    <!-- Tab content for Profile -->
+    <div id="Profile" class="tab-content" style="display: block;">
+        <h3>Update Your Profile</h3>
+        <p>Keep your personal and contact information up to date.</p>
+        
+        <form method="post" enctype="multipart/form-data" style="margin-top: 1.5rem;">
+            {% csrf_token %}
+            {{ u_form.as_p }}
+            {{ p_form.as_p }}
+            <button type="submit" name="update_profile">Save Profile Changes</button>
+        </form>
+    </div>
+
+    <!-- Tab content for Password -->
+    <div id="Password" class="tab-content">
+        <h3>Change Your Password</h3>
+        <p>For your security, we recommend choosing a strong password that you don't use elsewhere.</p>
+
+        <form method="post" style="margin-top: 1.5rem;">
+            {% csrf_token %}
+            {{ password_form.as_p }}
+            <button type="submit" name="change_password">Update Password</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // If there are password errors, open the password tab on page load
+    {% if password_form.errors %}
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.tab-link[onclick*="Password"]').click();
+        });
+    {% endif %}
+</script>
+{% endblock %}

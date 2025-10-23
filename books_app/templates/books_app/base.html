@@ -7,12 +7,143 @@
   <title>{% block title %}eBooks{% endblock %}</title>
   
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    /* --- Form Styling --- */
+    .form-container {
+        max-width: 450px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .form-container p {
+        line-height: 1.6;
+    }
+    .form-container .form-footer {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.9em;
+    }
+    .form-container input,
+    .form-container select {
+        width: 100%;
+        padding: 12px 15px;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--input-background);
+        color: var(--text-color);
+        box-sizing: border-box; /* Important for padding */
+    }
+    .form-container button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .form-container button:hover {
+        background-color: var(--primary-hover-color);
+    }
+
+    /* --- Responsive Navigation --- */
+    @media (max-width: 768px) {
+        .main-nav {
+            display: none; /* Hidden by default on mobile */
+            position: absolute;
+            top: 60px; /* Position below header */
+            left: 0;
+            right: 0;
+            background-color: var(--background-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .main-nav.is-active {
+            display: block; /* Show when active */
+        }
+        .main-nav ul {
+            flex-direction: column;
+        }
+        .main-nav ul li {
+            width: 100%;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .main-nav ul li:last-child {
+            border-bottom: none;
+        }
+        .main-nav ul li a {
+            padding: 1rem;
+            display: block;
+        }
+        .hamburger {
+            display: block; /* Show hamburger on mobile */
+        }
+    }
+
+    /* --- Account Page Tabs --- */
+    .account-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1.5rem;
+    }
+    .account-tabs .tab-link {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        color: var(--text-color);
+        border-bottom: 3px solid transparent;
+        margin-bottom: -1px; /* Align with the container's border */
+        font-size: 1em;
+    }
+    .account-tabs .tab-link.active {
+        border-bottom-color: var(--primary-color);
+        font-weight: bold;
+    }
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive tabs */
+    @media (max-width: 480px) {
+        .account-tabs {
+            flex-direction: column;
+            border-bottom: none;
+        }
+        .account-tabs .tab-link {
+            width: 100%;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 0;
+        }
+    }
+  </style>
 </head>
 <body data-theme="light"> 
 
 <header class="site-header">
     <div class="container header-inner">
-        <a class="brand" href="{% url 'books_app:home' %}">eBooks</a>
+        {% if user.is_authenticated %}
+            <a class="brand" href="{% url 'books_app:home' %}">eBooks</a>
+        {% else %}
+            <span class="brand">eBooks</span>
+        {% endif %}
         
         <div class="header-actions">
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
@@ -20,19 +151,27 @@
                 <span class="moon-icon" style="display:none;">🌙</span>
             </button>
             
-            <button id="mobile-nav-toggle" class="hamburger" aria-label="toggle navigation" aria-expanded="false">
-                ☰
-            </button>
+            {% if user.is_authenticated %}
+                <button id="mobile-nav-toggle" class="hamburger" aria-label="toggle navigation" aria-expanded="false">
+                    ☰
+                </button>
+            {% endif %}
         </div>
 
         <nav class="main-nav" aria-label="Main navigation">
             <ul>
-                <li style="--delay: 0.1s;"><a href="{% url 'books_app:home' %}">Home</a></li>
-                <li style="--delay: 0.2s;"><a href="{% url 'books_app:request_book' %}">Request / Order</a></li>
-                <li style="--delay: 0.3s;"><a href="{% url 'books_app:about' %}">About</a></li>
-                <li style="--delay: 0.4s;"><a href="{% url 'books_app:help' %}">Help</a></li>
-                <li style="--delay: 0.5s;"><a href="{% url 'books_app:contact' %}">Contact</a></li>
-                <li style="--delay: 0.6s;"><a href="{% url 'books_app:account' %}">Account</a></li>
+                {% if user.is_authenticated %}
+                    <li style="--delay: 0.1s;"><a href="{% url 'books_app:home' %}">Dashboard</a></li>
+                    <li style="--delay: 0.2s;"><a href="{% url 'books_app:request_book' %}">Request Book</a></li>
+                    <li style="--delay: 0.3s;"><a href="{% url 'books_app:my_requests' %}">My Requests</a></li>
+                    <li style="--delay: 0.4s;"><a href="{% url 'books_app:about' %}">About</a></li>
+                    <li style="--delay: 0.5s;"><a href="{% url 'books_app:contact' %}">Contact</a></li>
+                    <li style="--delay: 0.6s;"><a href="{% url 'books_app:account' %}">My Account</a></li>
+                    <li style="--delay: 0.7s;"><a href="{% url 'books_app:logout' %}">Log Out</a></li>
+                {% else %}
+                    <li style="--delay: 0.1s;"><a href="{% url 'books_app:login' %}">Login</a></li>
+                    <li style="--delay: 0.2s;"><a href="{% url 'books_app:signup' %}">Sign Up</a></li>
+                {% endif %}
             </ul>
         </nav>
     </div>
@@ -47,12 +186,34 @@
         <p>© {{ now|date:"Y" }} eBooks — Simple, fast, local.</p>
         <nav>
             <a href="{% url 'books_app:about' %}">About</a>
-            <a href="#">Help</a>
-            <a href="#">Contact</a>
+            <a href="{% url 'books_app:help' %}">Help</a>
+            <a href="{% url 'books_app:contact' %}">Contact</a>
         </nav>
     </div>
 </footer>
 
 <script src="{% static 'js/main.js' %}"></script>
+<script>
+    // --- Tabbed Interface for Account Page ---
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+
+        // Hide all tab content
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Remove the "active" class from all tab links
+        tablinks = document.getElementsByClassName("tab-link");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab and add an "active" class to the button that opened the tab
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
 </body>
 </html>

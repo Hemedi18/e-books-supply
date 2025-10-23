@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import User
 from urllib.parse import quote
 
 # --- Helper Model: Profile of the WhatsApp Requester ---
@@ -8,16 +9,19 @@ class RequesterProfile(models.Model):
     Stores the details of a user who can request a book. 
     Crucial for identifying who to send the book to.
     """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    profile_picture = models.ImageField(
+        upload_to='profile_pics/', 
+        blank=True, null=True, help_text="Optional profile picture."
+    )
     whatsapp_name = models.CharField(
         max_length=150, 
-        unique=True, 
         help_text="The name the user uses in the WhatsApp group."
     )
     whatsapp_number = models.CharField(
         max_length=20, 
-        blank=True, 
-        null=True,
-        help_text="Full phone number (including country code, e.g., +255712345678)."
+        unique=True, # Each number should be unique
+        help_text="Required. Full phone number including country code, e.g., +255712345678."
     )
     is_active = models.BooleanField(default=True)
     joined_date = models.DateTimeField(auto_now_add=True)
@@ -70,7 +74,12 @@ class BookRequest(models.Model):
     )
     
     requester = models.ForeignKey(RequesterProfile, on_delete=models.CASCADE)
-    book_requested = models.ForeignKey(BookAvailable, on_delete=models.CASCADE)
+    # Link to an existing book if it's in the catalog, otherwise it's a new request.
+    book_requested = models.ForeignKey(BookAvailable, on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Fields for when the book is NOT in the catalog yet.
+    book_title = models.CharField(max_length=200, help_text="Title of the requested book.")
+    book_author = models.CharField(max_length=100, blank=True, help_text="Author of the requested book.")
     
     # The status of the request
     status = models.CharField(
@@ -78,6 +87,7 @@ class BookRequest(models.Model):
         choices=STATUS_CHOICES, 
         default='PENDING'
     )
+
     
     request_date = models.DateTimeField(auto_now_add=True)
     fulfillment_date = models.DateTimeField(null=True, blank=True)
@@ -86,7 +96,7 @@ class BookRequest(models.Model):
     admin_notes = models.TextField(blank=True, help_text="Notes on fulfillment, e.g., 'Sent via WhatsApp on 2025-10-23'.")
 
     def __str__(self):
-        return f"Request by {self.requester.whatsapp_name} for {self.book_requested.title}"
+        return f"Request by {self.requester.whatsapp_name} for {self.book_title}"
 
     def get_whatsapp_link(self):
         """Generates a WhatsApp link for the admin to contact the user quickly."""
@@ -95,7 +105,7 @@ class BookRequest(models.Model):
             return mark_safe('<span style="color: red;">Number Missing</span>')
 
         # Generate a message to pre-fill the chat
-        message = f"Hello {self.requester.whatsapp_name}, I am confirming your request for the book: '{self.book_requested.title}'. Please confirm you are ready to receive the file."
+        message = f"Hello {self.requester.whatsapp_name}, regarding your request for the book: '{self.book_title}'."
         
         # Use WhatsApp API link structure
         link = f"https://wa.me/{number}?text={quote(message)}"

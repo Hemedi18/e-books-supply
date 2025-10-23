@@ -1,0 +1,15 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}Registration Successful{% endblock %}
+
+{% block content %}
+<div class="form-container" style="text-align: center;">
+    <h2>Registration Successful!</h2>
+    <p>Thank you for creating an account. Your information has been saved.</p>
+    <p>You will be redirected to the login page in 5 seconds.</p>
+    <p>If you are not redirected, <a href="{% url 'books_app:login' %}">click here to log in</a>.</p>
+</div>
+
+<!-- This meta tag handles the automatic redirection -->
+<meta http-equiv="refresh" content="5;url={% url 'books_app:login' %}">
+{% endblock %}

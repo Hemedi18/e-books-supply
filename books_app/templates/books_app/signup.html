@@ -1,0 +1,15 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}Sign Up - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2>Create an Account</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign Up</button>
+  </form>
+  <p class="form-footer">Already have an account? <a href="{% url 'books_app:login' %}">Log In</a></p>
+</div>
+{% endblock %}

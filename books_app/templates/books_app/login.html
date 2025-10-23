@@ -1,0 +1,20 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}Log In - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2>Log In</h2>
+
+  {% if form.errors %}
+    <p style="color: #dc3545; text-align: center;">Your username and password didn't match. Please try again.</p>
+  {% endif %}
+
+  <form method="post" action="{% url 'books_app:login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Log In</button>
+  </form>
+  <p class="form-footer">Don't have an account? <a href="{% url 'books_app:signup' %}">Sign Up</a></p>
+</div>
+{% endblock %}

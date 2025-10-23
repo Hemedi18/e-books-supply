@@ -373,25 +373,6 @@ a:hover {
 
 /* --- DOWNLOAD BUTTON STYLES --- */
 
-.book-item {
-    /* Grid item styling for the card effect */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--background-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: all 0.3s;
-    text-align: center;
-}
-
-.book-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
 .download-button {
     display: inline-block;
     width: 100%;
@@ -438,4 +419,196 @@ a:hover {
         padding: 8px 10px;
         font-size: 0.8em;
     }
+}
+
+/* --- GENERIC CONTENT PAGE STYLES (ABOUT, CONTACT, ETC.) --- */
+.content-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: rgba(var(--glass-bg-base), 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.content-page h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.content-page p {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.contact-list {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-list li {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.button-link {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white !important;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-link:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* --- STYLED FORMS (REQUEST, MY REQUESTS) --- */
+.styled-form p {
+    margin-bottom: 1rem;
+}
+.styled-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+.styled-form input[type="text"],
+.styled-form input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.styled-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.2);
+}
+.styled-form .helptext {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-top: 0.25rem;
+}
+.styled-form button {
+    margin-top: 1rem;
+}
+.form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* --- MY REQUESTS LIST STYLES --- */
+.requests-container {
+    margin-top: 2.5rem;
+}
+.requests-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+}
+.request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background-color: rgba(var(--glass-bg-base), 0.3);
+}
+.request-title {
+    font-weight: bold;
+    display: block;
+}
+.request-author, .request-date {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+.status-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    background-color: var(--primary-color); /* Default: Pending */
+}
+.status-fulfilled .status-badge { background-color: #28a745; } /* Green */
+.status-rejected .status-badge { background-color: #dc3545; } /* Red */
+.status-contact .status-badge { background-color: #ffc107; color: #333; } /* Yellow */
+
+/* --- ACCOUNT PAGE STYLES --- */
+.account-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.account-card {
+    background-color: rgba(var(--glass-bg-base), 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.account-card h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.profile-pic-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.button-link.logout {
+    background-color: var(--accent-color);
+}
+.button-link.logout:hover {
+    background-color: #d32f2f; /* Darker red */
+}
+
+/* --- MESSAGES FRAMEWORK STYLES --- */
+.messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+.message {
+    padding: 1rem;
+    border-radius: 5px;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+.message.success {
+    background-color: #28a745;
+}
+.message.error {
+    background-color: #dc3545;
 }

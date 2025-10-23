@@ -1,0 +1,18 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}About Us - eBooks{% endblock %}
+
+{% block content %}
+  <div class="content-page">
+    <h1>About This Project</h1>
+    <p>
+      Welcome to eBooks, a simple and fast way to access a local collection of digital books. 
+      This project is designed to make book sharing easy and efficient for our community.
+    </p>
+    <p>
+      Our goal is to provide a centralized catalog where users can browse available titles and request them directly. 
+      The entire project is open source, and you can view the code, track progress, or contribute on our GitHub repository.
+    </p>
+    <a href="{{ github_url }}" target="_blank" class="button-link">View on GitHub</a>
+  </div>
+{% endblock %}

@@ -61,7 +61,7 @@ ROOT_URLCONF = 'books.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,3 +136,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 2. MEDIA_URL: The URL prefix used to access the media.
 MEDIA_URL = '/media/'
+
+# --- Authentication Settings ---
+LOGIN_URL = 'books_app:login'
+LOGIN_REDIRECT_URL = 'books_app:home'
+LOGOUT_REDIRECT_URL = 'books_app:login'

@@ -1,0 +1,29 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}My Requests - eBooks{% endblock %}
+
+{% block content %}
+  <div class="content-page">
+    <h1>Check Your Request Status</h1>
+    <p>Here is a list of all your book requests and their current status.</p>
+    {% if requests_list %}
+      <div class="requests-container">
+        <h2>Your Requests</h2>
+        <ul class="requests-list">
+          {% for request in requests_list %}
+            <li class="request-item status-{{ request.status|lower }}">
+              <div class="request-details">
+                <span class="request-title">{{ request.book_title }}</span>
+                <span class="request-author">by {{ request.book_author|default:"Unknown Author" }}</span>
+              </div>
+              <div class="request-status">
+                <span class="status-badge">{{ request.get_status_display }}</span>
+                <span class="request-date">{{ request.request_date|date:"M d, Y" }}</span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

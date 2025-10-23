@@ -1,0 +1,14 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}Log Out - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="form-container" style="text-align: center;">
+  <h2>Log Out</h2>
+  <p>Are you sure you want to log out?</p>
+  <form method="post" action="{% url 'books_app:logout' %}">
+    {% csrf_token %}
+    <button type="submit" style="background-color: #dc3545;">Log Out</button>
+  </form>
+</div>
+{% endblock %}

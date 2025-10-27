@@ -21,7 +21,8 @@ class RequesterProfile(models.Model):
     whatsapp_number = models.CharField(
         max_length=20, 
         unique=True, # Each number should be unique
-        help_text="Required. Full phone number including country code, e.g., +255712345678."
+        null=True, blank=True, # Allow number to be optional initially
+        help_text="Optional. Full phone number including country code, e.g., +255712345678."
     )
     is_active = models.BooleanField(default=True)
     joined_date = models.DateTimeField(auto_now_add=True)

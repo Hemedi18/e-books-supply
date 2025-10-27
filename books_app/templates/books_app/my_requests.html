@@ -1,29 +1,25 @@
 {% extends "books_app/base.html" %}
 
-{% block title %}My Requests - eBooks{% endblock %}
+{% block title %}My Book Requests{% endblock %}
 
 {% block content %}
-  <div class="content-page">
-    <h1>Check Your Request Status</h1>
-    <p>Here is a list of all your book requests and their current status.</p>
-    {% if requests_list %}
-      <div class="requests-container">
-        <h2>Your Requests</h2>
-        <ul class="requests-list">
-          {% for request in requests_list %}
-            <li class="request-item status-{{ request.status|lower }}">
-              <div class="request-details">
-                <span class="request-title">{{ request.book_title }}</span>
-                <span class="request-author">by {{ request.book_author|default:"Unknown Author" }}</span>
-              </div>
-              <div class="request-status">
-                <span class="status-badge">{{ request.get_status_display }}</span>
-                <span class="request-date">{{ request.request_date|date:"M d, Y" }}</span>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
+  <div class="page-header">
+    <h1>My Book Requests</h1>
+    <p>Here is the history of all the books you have requested.</p>
   </div>
+
+  {% if requests_list %}
+    <div class="requests-list">
+      {% for request in requests_list %}
+        <div class="request-item">
+          <h3>{{ request.book_title }}</h3>
+          <p>by {{ request.book_author|default:"N/A" }}</p>
+          <p><strong>Status:</strong> {{ request.get_status_display }}</p>
+          <p><strong>Requested on:</strong> {{ request.request_date|date:"F j, Y" }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You have not made any book requests yet. <a href="{% url 'books_app:request_book' %}">Request one now!</a></p>
+  {% endif %}
 {% endblock %}

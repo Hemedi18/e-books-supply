@@ -1,0 +1,614 @@
+/* KEYFRAMES (ANIMATIONS) */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+/* Animation ya Menyu ya Simu: Inatoka Kulia (Slide-in) */
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* GLOBAL STYLES & THEME VARIABLES */
+:root { /* Light Theme (Default) */
+    --primary-color: #4a90e2; /* Deep Blue for vibrancy */
+    --accent-color: #ff5a5f; /* Accent color for hover/active states */
+    --background-color: #f0f2f5;
+    --text-color: #333;
+    --glass-bg-base: 255, 255, 255;
+    --glass-bg-alpha: 0.7;
+    --header-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --border-color: rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme="dark"] { /* Dark Theme */
+    --primary-color: #8cafff; /* Lighter Blue kwa contrast nzuri */
+    --accent-color: #ff8c8f;
+    --background-color: #1a1a2e; /* Deep Dark Blue */
+    --text-color: #f0f0f0;
+    --glass-bg-base: 26, 26, 46;
+    --glass-bg-alpha: 0.8;
+    --header-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+    --border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Base Reset & Smoothness */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.5s ease; /* Transition ya ulaini kwa mandhari yote */
+}
+
+/* UTILITIES */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+a:hover {
+    color: var(--accent-color); /* Tumia accent color kwenye hover */
+    transform: translateY(-1px);
+}
+
+/* GLASSMORPHIC HEADER */
+.site-header {
+    background-color: rgba(var(--glass-bg-base), var(--glass-bg-alpha));
+    backdrop-filter: blur(12px); /* Glass effect kali zaidi */
+    box-shadow: var(--header-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.brand {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* THEME & HAMBURGER BUTTONS */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle, .hamburger {
+    background: none;
+    border: 2px solid var(--primary-color); /* Border yenye rangi ya kuvutia */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover, .hamburger:hover {
+    background-color: rgba(var(--primary-color), 0.1);
+    transform: scale(1.05);
+}
+
+/* NAVIGATION (Desktop View) */
+.main-nav {
+    display: block; /* Onyesha kwa skrini kubwa */
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.main-nav a {
+    color: var(--text-color);
+}
+
+.main-nav a::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 3px;
+    background: var(--accent-color);
+    transition: width 0.3s ease;
+}
+
+.main-nav a:hover::after {
+    width: 100%;
+}
+
+/* HAMBURGER: Ficha kwenye Desktop */
+.hamburger {
+    display: none; 
+}
+
+
+/* FOOTER STYLES */
+.site-footer {
+    /* Tumia Glassmorphism sawa na Header */
+    background-color: rgba(var(--glass-bg-base), 0.5); 
+    backdrop-filter: blur(8px);
+    color: var(--text-color); /* Rangi ya maandishi inalingana na body */
+    padding: 1.5rem 0;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Shadow ndogo juu */
+    transition: all 0.5s ease;
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between; /* Tenganisha Copyright na Navigation */
+    align-items: center;
+    font-size: 0.95rem;
+    padding: 0 1.5rem; /* Hakikisha padding inalingana na .container */
+    
+    /* Animation: Fade in */
+    animation: fadeInUp 1s ease-out 0.5s both; 
+}
+
+/* Kurekebisha Linki za Footer ili zifanane na Header */
+.site-footer nav {
+    /* Hakikisha nav inatumia flex pia */
+    display: flex; 
+    gap: 1.5rem; /* Nafasi kati ya linki kama kwenye Header */
+}
+
+.site-footer nav a {
+    color: var(--text-color); /* Rangi ya maandishi ya kawaida */
+    opacity: 0.8;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+.site-footer nav a:hover {
+    color: var(--primary-color); /* Rangi ya Msingi kwenye hover */
+    opacity: 1;
+    text-decoration: none;
+    transform: translateY(-2px); /* Kuteleza kidogo juu */
+}
+
+/* Kuongeza Underline Animation kama Header */
+.site-footer nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--accent-color);
+    transition: width 0.3s ease-out;
+}
+
+.site-footer nav a:hover::after {
+    width: 100%;
+}
+
+/* MEDIA QUERY FIX FOR MOBILE */
+@media (max-width: 768px) {
+    .footer-inner {
+        flex-direction: column; /* Rudisha kwenye safu wima kwenye simu */
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .site-footer nav {
+        gap: 1rem;
+        justify-content: center; /* Weka linki katikati */
+        flex-wrap: wrap;
+    }
+    
+    /* Ondoa underline kwenye simu ili kuzuia matatizo ya layout */
+    .site-footer nav a::after {
+        display: none;
+    }
+}
+
+
+/* ------------------------------------------- */
+/* MEDIA QUERIES FOR MOBILE (MAX-WIDTH: 768px) */
+/* ------------------------------------------- */
+@media (max-width: 768px) {
+    
+    /* Reduce vertical space for main content on mobile */
+    main.container h1 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem; /* Smaller H1 on mobile */
+    }
+    main.container > p {
+        margin-bottom: 1rem;
+    }
+
+    .header-inner {
+        padding: 0.8rem 1rem; /* Reduced header padding */
+    }
+    
+    .brand {
+        font-size: 1.5rem; /* Smaller brand/logo on mobile */
+    }
+
+    /* HAMBURGER: ONYESHA KWENYE SIMU */
+    .hamburger {
+        display: block; 
+        z-index: 1001; 
+    }
+
+    /* MAIN NAV: FICHA KWENYE SIMU KWANZA */
+    .main-nav {
+        display: none; 
+        position: absolute;
+        top: 70px; 
+        left: 0;
+        width: 100%;
+        background-color: rgba(var(--glass-bg-base), 0.95); /* opacity kubwa zaidi ya Glass */
+        backdrop-filter: blur(15px);
+        box-shadow: var(--header-shadow);
+        border-top: 1px solid var(--border-color);
+    }
+    
+    /* Hali ya Open: Fanya menyu ionekane na animation */
+    .main-nav.is-open {
+        display: block; 
+        animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth animation curve */
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    /* Styles za Linki za Simu */
+    .main-nav li {
+        border-bottom: 1px solid var(--border-color);
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+    
+    .main-nav li:hover {
+        background-color: rgba(var(--primary-color), 0.1); /* Rangi laini ya hover */
+    }
+
+    .main-nav a {
+        padding: 1rem 1.5rem;
+        display: block;
+        width: 100%;
+    }
+    
+    .main-nav a::after {
+        display: none; /* Ondoa underline animation kwenye simu */
+    }
+
+}
+
+/* Forces 1 column on very small mobile screens for better readability */
+@media (max-width: 500px) {
+    .book-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- BOOK GRID & CARD STYLES --- */
+
+.book-grid {
+    display: grid;
+    /* Default to larger cards for desktop */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.book-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--background-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.book-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.book-cover {
+    width: 150px;
+    height: 220px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.book-details {
+    width: 100%;
+    padding-top: 10px;
+    flex-grow: 1; /* Allows details to fill space */
+}
+
+.book-details h2 {
+    font-size: 1.1em;
+    margin: 0 0 5px 0;
+    color: var(--primary-color);
+}
+
+.book-details p {
+    margin: 0;
+    font-size: 0.85em;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+
+/* --- DOWNLOAD BUTTON STYLES --- */
+
+.download-button {
+    display: inline-block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px 15px;
+    background-color: #28a745; 
+    color: white !important; 
+    text-align: center;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.download-button:hover {
+    background-color: #218838; 
+    transform: translateY(-1px); 
+}
+
+/* --- MOBILE OVERRIDE FOR 2x2 GRID --- */
+@media (max-width: 768px) {
+    .book-grid {
+        grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+        gap: 15px;
+        padding: 15px 0;
+    }
+
+    .book-item {
+        padding: 10px;
+    }
+
+    .book-cover {
+        width: 100%; /* Make cover responsive to card width */
+        height: 160px; /* Set a fixed compact height */
+        margin-bottom: 10px;
+    }
+
+    .book-details h2 {
+        font-size: 0.9em;
+    }
+
+    .download-button {
+        margin-top: 10px;
+        padding: 8px 10px;
+        font-size: 0.8em;
+    }
+}
+
+/* --- GENERIC CONTENT PAGE STYLES (ABOUT, CONTACT, ETC.) --- */
+.content-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: rgba(var(--glass-bg-base), 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.content-page h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.content-page p {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.contact-list {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-list li {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.button-link {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white !important;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-link:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* --- STYLED FORMS (REQUEST, MY REQUESTS) --- */
+.styled-form p {
+    margin-bottom: 1rem;
+}
+.styled-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+.styled-form input[type="text"],
+.styled-form input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.styled-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.2);
+}
+.styled-form .helptext {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-top: 0.25rem;
+}
+.styled-form button {
+    margin-top: 1rem;
+}
+.form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* --- MY REQUESTS LIST STYLES --- */
+.requests-container {
+    margin-top: 2.5rem;
+}
+.requests-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+}
+.request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background-color: rgba(var(--glass-bg-base), 0.3);
+}
+.request-title {
+    font-weight: bold;
+    display: block;
+}
+.request-author, .request-date {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+.status-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    background-color: var(--primary-color); /* Default: Pending */
+}
+.status-fulfilled .status-badge { background-color: #28a745; } /* Green */
+.status-rejected .status-badge { background-color: #dc3545; } /* Red */
+.status-contact .status-badge { background-color: #ffc107; color: #333; } /* Yellow */
+
+/* --- ACCOUNT PAGE STYLES --- */
+.account-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.account-card {
+    background-color: rgba(var(--glass-bg-base), 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.account-card h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.profile-pic-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.button-link.logout {
+    background-color: var(--accent-color);
+}
+.button-link.logout:hover {
+    background-color: #d32f2f; /* Darker red */
+}
+
+/* --- MESSAGES FRAMEWORK STYLES --- */
+.messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+.message {
+    padding: 1rem;
+    border-radius: 5px;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+.message.success {
+    background-color: #28a745;
+}
+.message.error {
+    background-color: #dc3545;
+}

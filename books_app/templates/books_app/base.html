@@ -133,6 +133,63 @@
             border-radius: 0;
         }
     }
+
+    /* --- Home Page Book Grid Width --- */
+    /* Make the main container wider on the home page for a better book display */
+    body.home-page .container {
+        max-width: 98%;
+        padding: 0; /* Remove padding to maximize space for the book grid */
+    }
+
+    /* --- Search Form Styling --- */
+    .search-form {
+        display: flex;
+        margin-bottom: 2rem;
+        gap: 0.5rem;
+    }
+    .search-form input[type="text"] {
+        flex-grow: 1; /* Take up available space */
+        padding: 12px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--input-background);
+        color: var(--text-color);
+        font-size: 1em;
+    }
+    .search-form button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .search-form button:hover { background-color: var(--primary-hover-color); }
+
+    /* --- Responsive Search Form --- */
+    @media (max-width: 480px) {
+        .search-form {
+            flex-direction: column; /* Stack the input and button vertically */
+        }
+    }
+
+    /* --- Responsive My Requests List --- */
+    @media (max-width: 600px) {
+        .request-item {
+            flex-direction: column;
+            align-items: flex-start; /* Align items to the left */
+            gap: 0.5rem; /* Add some space between stacked items */
+        }
+        .request-details {
+            margin-bottom: 0.5rem; /* Space between details and status */
+        }
+        .status-badge {
+            align-self: flex-start; /* Ensure badge stays on the left */
+        }
+    }
+
   </style>
 </head>
 <body data-theme="light"> 

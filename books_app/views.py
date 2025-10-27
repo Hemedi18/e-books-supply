@@ -1,20 +1,28 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import BookAvailable, RequesterProfile, BookRequest
 from .forms import (
-    BookRequestForm, MyRequestsForm, CustomUserCreationForm, 
-    UserUpdateForm, ProfileUpdateForm
+    BookRequestForm, CustomUserCreationForm, UserUpdateForm, 
+    ProfileUpdateForm
 )
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 
 # Create your views here.
 
 @login_required
 def home(request):
-    books = BookAvailable.objects.all()
-    return render(request, 'books_app/home.html', {'books': books})
+    queryset = BookAvailable.objects.filter(is_available=True).order_by('-published_date', 'title')
+    query = request.GET.get('q')
+
+    if query:
+        # Filter by title or author, case-insensitively
+        queryset = queryset.filter(
+            Q(title__icontains=query) | Q(author__icontains=query)
+        ).distinct()
+    return render(request, 'books_app/home.html', {'books': queryset, 'query': query})
 
 @login_required
 def request_book(request):
@@ -35,13 +43,17 @@ def request_book(request):
 
 @login_required
 def my_requests(request):
-    form = MyRequestsForm(request.GET or None)
-    requests_list = []
-    if form.is_valid():
-        whatsapp_number = form.cleaned_data['whatsapp_number']
-        requests_list = BookRequest.objects.filter(requester__whatsapp_number=whatsapp_number).order_by('-request_date')
-
-    return render(request, 'books_app/my_requests.html', {'form': form, 'requests_list': requests_list})
+    # Fetch requests directly for the logged-in user.
+    try:
+        # Get the user's profile, which is linked to their requests.
+        profile = request.user.requesterprofile
+        requests_list = BookRequest.objects.filter(requester=profile).order_by('-request_date')
+    except RequesterProfile.DoesNotExist:
+        # This is a fallback in case a user (like a superuser) doesn't have a profile.
+        requests_list = []
+        messages.warning(request, "Your requester profile could not be found. Please visit your account page to ensure it's set up correctly.")
+        
+    return render(request, 'books_app/my_requests.html', {'requests_list': requests_list})
 
 @login_required
 def about(request):
@@ -65,9 +77,11 @@ def contact(request):
 def account(request):
     # Ensure a profile exists for the user, creating one if it doesn't.
     # This makes the view robust for any user, including superusers.
-    profile, created = RequesterProfile.objects.get_or_create(
-        user=request.user,
-        defaults={'whatsapp_name': request.user.username} # Provide a default name
+    profile, created = RequesterProfile.objects.get_or_create(user=request.user,
+        defaults={
+            'whatsapp_name': request.user.username,
+            'whatsapp_number': None # Explicitly set to None on creation
+        }
     )
 
     if request.method == 'POST':

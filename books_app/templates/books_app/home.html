@@ -1,11 +1,21 @@
 {% extends "books_app/base.html" %}
 
-
+{% block body_class %}home-page{% endblock %}
+{# By adding a class to the body, we can apply page-specific styles from base.html #}
+ 
 {% block title %}Home - eBooks{% endblock %}
 
 {% block content %}
-  <h1>Books you may be interested in</h1>
-  <p>This is the home page.</p>
+  <div class="page-header">
+    <h1>Available Books</h1>
+    <p>Browse the collection or search for a specific title or author.</p>
+  </div>
+
+  <!-- Search Form -->
+  <form method="get" action="{% url 'books_app:home' %}" class="search-form">
+    <input type="text" name="q" placeholder="Search by title or author..." value="{{ query|default:'' }}">
+    <button type="submit">Search</button>
+  </form>
 
   <!-- This is the grid container -->
   <div class="book-grid">
@@ -31,7 +41,10 @@
             
         </div>
     {% empty %}
-        <p>No books are available at the moment.</p>
+        <div class="no-results">
+            <h3>No Books Found</h3>
+            <p>There are no books matching your search for "<strong>{{ query }}</strong>". Try a different search or <a href="{% url 'books_app:request_book' %}">request a new book</a>.</p>
+        </div>
     {% endfor %}
   </div>
 {% endblock %}

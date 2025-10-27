@@ -51,6 +51,3 @@ class BookRequestForm(forms.ModelForm):
         labels = {
             'book_author': 'Author (Optional)',
         }
-
-class MyRequestsForm(forms.Form):
-    whatsapp_number = forms.CharField(max_length=20, label="Enter Your WhatsApp Number to see your requests", required=True)

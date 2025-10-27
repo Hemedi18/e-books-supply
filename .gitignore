@@ -1,57 +1,14 @@
-# Python
-*.pyc
-__pycache__/
-*.o
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
 
-# Virtual environment
-venv/
-.venv/
-env/
-
-# Django specific
-db.sqlite3
+# Django
 *.log
 *.pot
-*.mo
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
 
-# Media and Static files (if they are generated/uploaded and not part of the source code)
-# If you are uploading media files to a cloud storage, you might not need to ignore the local media folder.
-# However, for local development, it's common to ignore it.
+# Media files
 /media/
-/static_collected/
 
-# Environment variables
-.env
-.flaskenv
-
-# IDE specific files
-.idea/
-.vscode/
-*.sublime-project
-*.sublime-workspace
-
-# Operating System files
-.DS_Store
-Thumbs.db
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Jupyter Notebooks (if you use them)
-.ipynb_checkpoints/
-
-# Docker (if you use it)
-Dockerfile.bak
-docker-compose.yml.bak
-
-# Other temporary files
-*~
-*.bak
-*.swp
+# Static files root
+/static/

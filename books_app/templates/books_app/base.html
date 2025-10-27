@@ -223,6 +223,22 @@
         }
     }
 
+    /* --- Custom Install Button --- */
+    .install-button {
+        padding: 8px 12px;
+        border: 1px solid var(--primary-color);
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-right: 10px; /* Space between install and theme button */
+    }
+    .install-button:hover {
+        background-color: var(--primary-hover-color);
+        border-color: var(--primary-hover-color);
+    }
   </style>
 </head>
 <body data-theme="light"> 
@@ -237,6 +253,7 @@
         {% endif %}
         
         <div class="header-actions">
+            <button id="install-app-btn" class="install-button" style="display: none;" aria-label="Install App">Install App</button>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <span class="sun-icon">☀️</span>
                 <span class="moon-icon" style="display:none;">🌙</span>
@@ -316,6 +333,35 @@
                 // registration failed :(
                 console.log('ServiceWorker registration failed: ', err);
             });
+        });
+    }
+
+    // --- Custom PWA Install Prompt ---
+    let deferredPrompt;
+    const installButton = document.getElementById('install-app-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Update UI to notify the user they can install the PWA
+        if (installButton) {
+            installButton.style.display = 'block';
+        }
+    });
+
+    if (installButton) {
+        installButton.addEventListener('click', async () => {
+            // Hide the app provided install promotion
+            installButton.style.display = 'none';
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            // We've used the prompt, and can't use it again, throw it away
+            deferredPrompt = null;
         });
     }
 </script>

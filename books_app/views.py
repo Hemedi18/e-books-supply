@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import BookAvailable, RequesterProfile, BookRequest
 from .forms import (
-    BookRequestForm, CustomUserCreationForm, UserUpdateForm, 
+    BookRequestForm, CustomUserCreationForm, UserUpdateForm, BookUploadForm,
     ProfileUpdateForm
 )
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
@@ -9,6 +9,7 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.utils import timezone
 
 # Create your views here.
 
@@ -54,6 +55,48 @@ def my_requests(request):
         messages.warning(request, "Your requester profile could not be found. Please visit your account page to ensure it's set up correctly.")
         
     return render(request, 'books_app/my_requests.html', {'requests_list': requests_list})
+
+@login_required
+def all_requests_view(request):
+    """
+    Displays all book requests from all users to the community.
+    """
+    all_requests = BookRequest.objects.all().order_by('-request_date')
+    return render(request, 'books_app/all_requests.html', {'requests_list': all_requests})
+
+@login_required
+def upload_book_view(request, request_id=None):
+    """
+    Handles book uploads by any authenticated user.
+    If a request_id is provided, it fulfills that request upon successful upload.
+    """
+    book_request_to_fulfill = None
+    if request_id:
+        try:
+            book_request_to_fulfill = BookRequest.objects.get(id=request_id, status='PENDING')
+        except BookRequest.DoesNotExist:
+            messages.error(request, "This book request could not be found or has already been fulfilled.")
+            return redirect('books_app:all_requests')
+
+    if request.method == 'POST':
+        form = BookUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_book = form.save() # The book is now in the catalog
+            
+            # If this upload is meant to fulfill a specific request
+            if book_request_to_fulfill:
+                book_request_to_fulfill.book_requested = new_book
+                book_request_to_fulfill.status = 'FULFILLED'
+                book_request_to_fulfill.fulfillment_date = timezone.now()
+                book_request_to_fulfill.save()
+                messages.success(request, f"Thank you! You have successfully uploaded '{new_book.title}' and fulfilled the request.")
+                return redirect('books_app:all_requests')
+
+            messages.success(request, f"Thank you for your contribution! '{new_book.title}' has been added to the catalog.")
+            return redirect('books_app:home')
+    else:
+        form = BookUploadForm(initial={'title': book_request_to_fulfill.book_title if book_request_to_fulfill else '', 'author': book_request_to_fulfill.book_author if book_request_to_fulfill else ''})
+    return render(request, 'books_app/upload_book.html', {'form': form, 'request_to_fulfill': book_request_to_fulfill})
 
 @login_required
 def about(request):

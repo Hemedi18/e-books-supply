@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from .models import RequesterProfile, BookRequest
+from .models import RequesterProfile, BookRequest, BookAvailable
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -51,3 +51,12 @@ class BookRequestForm(forms.ModelForm):
         labels = {
             'book_author': 'Author (Optional)',
         }
+
+class BookUploadForm(forms.ModelForm):
+    """
+    A form for users to upload new books to the catalog.
+    """
+    class Meta:
+        model = BookAvailable
+        fields = ['title', 'author', 'book_file', 'cover_image', 'published_date']
+        widgets = {'published_date': forms.DateInput(attrs={'type': 'date'})}

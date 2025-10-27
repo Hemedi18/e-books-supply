@@ -239,6 +239,29 @@
         background-color: var(--primary-hover-color);
         border-color: var(--primary-hover-color);
     }
+
+    /* --- Floating Action Button (FAB) for Admins --- */
+    .fab {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        text-decoration: none;
+        z-index: 999;
+        transition: all 0.3s ease;
+    }
+    .fab-symbol {
+        font-size: 2rem;
+        line-height: 1;
+    }
   </style>
 </head>
 <body data-theme="light"> 
@@ -269,13 +292,13 @@
         <nav class="main-nav" aria-label="Main navigation">
             <ul>
                 {% if user.is_authenticated %}
-                    <li style="--delay: 0.1s;"><a href="{% url 'books_app:home' %}">Dashboard</a></li>
-                    <li style="--delay: 0.2s;"><a href="{% url 'books_app:request_book' %}">Request Book</a></li>
-                    <li style="--delay: 0.3s;"><a href="{% url 'books_app:my_requests' %}">My Requests</a></li>
-                    <li style="--delay: 0.4s;"><a href="{% url 'books_app:about' %}">About</a></li>
-                    <li style="--delay: 0.5s;"><a href="{% url 'books_app:contact' %}">Contact</a></li>
-                    <li style="--delay: 0.6s;"><a href="{% url 'books_app:account' %}">My Account</a></li>
-                    <li style="--delay: 0.7s;"><a href="{% url 'books_app:logout' %}">Log Out</a></li>
+                    <li><a href="{% url 'books_app:home' %}">Dashboard</a></li>
+                    <li><a href="{% url 'books_app:request_book' %}">Request a Book</a></li>
+                    <li><a href="{% url 'books_app:my_requests' %}">My Requests</a></li>
+                    <li><a href="{% url 'books_app:all_requests' %}">Community Requests</a></li>
+                    <li><a href="{% url 'books_app:about' %}">About</a></li>
+                    <li><a href="{% url 'books_app:account' %}">My Account</a></li>
+                    <li><a href="{% url 'books_app:logout' %}">Log Out</a></li>
                 {% else %}
                     <li style="--delay: 0.1s;"><a href="{% url 'books_app:login' %}">Login</a></li>
                     <li style="--delay: 0.2s;"><a href="{% url 'books_app:signup' %}">Sign Up</a></li>
@@ -299,6 +322,13 @@
         </nav>
     </div>
 </footer>
+
+{% if user.is_authenticated %}
+    <!-- Floating Action Button for ALL users to add a new book -->
+    <a href="{% url 'books_app:upload_book' %}" class="fab" title="Contribute a New Book">
+        <span class="fab-symbol">+</span>
+    </a>
+{% endif %}
 
 <script src="{% static 'js/main.js' %}"></script>
 <script>

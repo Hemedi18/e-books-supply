@@ -1,0 +1,30 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}Community Book Requests{% endblock %}
+
+{% block content %}
+  <div class="page-header">
+    <h1>Community Book Requests</h1>
+    <p>See what books others have requested. You can help by uploading a book to fulfill a request!</p>
+  </div>
+
+  {% if requests_list %}
+    <div class="requests-list">
+      {% for request in requests_list %}
+        <div class="request-item">
+          <div>
+            <h3>{{ request.book_title }}</h3>
+            <p>by {{ request.book_author|default:"N/A" }}</p>
+            <p><small>Requested by: {{ request.requester.whatsapp_name }} on {{ request.request_date|date:"F j, Y" }}</small></p>
+            <p><strong>Status:</strong> {{ request.colored_status }}</p>
+          </div>
+          {% if request.status == 'PENDING' %}
+            <a href="{% url 'books_app:upload_for_request' request.id %}" class="button-link">Upload & Fulfill</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>There are no book requests from the community yet. Be the first to <a href="{% url 'books_app:request_book' %}">request one!</a></p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}Upload a New Book{% endblock %}
+
+{% block content %}
+<div class="content-page styled-form">
+    {% if request_to_fulfill %}
+        <h1>Fulfill Request: {{ request_to_fulfill.book_title }}</h1>
+        <p>You are uploading a book to fulfill a request from {{ request_to_fulfill.requester.whatsapp_name }}. Thank you for helping!</p>
+    {% else %}
+        <h1>Contribute a New Book</h1>
+        <p>Add a new book to our community catalog. Please provide as much detail as possible.</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button-link">Upload Book</button>
+    </form>
+</div>
+{% endblock %}

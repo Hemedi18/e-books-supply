@@ -7,6 +7,16 @@
   <title>{% block title %}eBooks{% endblock %}</title>
   
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#4a90e2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="eBooks">
+  <link rel="apple-touch-icon" href="{% static 'images/icon-192x192.png' %}">
+  <link rel="icon" type="image/x-icon" href="{% static "images/icon.ico" %}" >
+
   <style>
     /* --- Form Styling --- */
     .form-container {
@@ -91,47 +101,70 @@
         }
     }
 
-    /* --- Account Page Tabs --- */
-    .account-tabs {
+    /* --- New Account Page Styling --- */
+    .account-page {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .profile-card {
         display: flex;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 1.5rem;
+        align-items: center;
+        background-color: var(--background-color);
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 2rem;
     }
-    .account-tabs .tab-link {
-        padding: 10px 20px;
-        cursor: pointer;
-        border: none;
+    .profile-picture-container {
+        flex-shrink: 0;
+        margin-right: 2rem;
+    }
+    .profile-picture {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--border-color);
+    }
+    .profile-info h2 {
+        margin: 0 0 0.25rem;
+    }
+    .profile-info .profile-meta {
+        margin: 0;
+        color: var(--text-secondary-color);
+    }
+    .action-bar {
+        position: sticky;
+        top: 10px; /* Adjust as needed based on your header height */
+        background-color: var(--background-color);
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 10;
+        display: flex;
+        gap: 1rem;
+        border: 1px solid var(--border-color);
+    }
+    .action-button {
+        flex-grow: 1;
+        padding: 12px;
+        border: 1px solid var(--primary-color);
         background-color: transparent;
-        color: var(--text-color);
-        border-bottom: 3px solid transparent;
-        margin-bottom: -1px; /* Align with the container's border */
-        font-size: 1em;
-    }
-    .account-tabs .tab-link.active {
-        border-bottom-color: var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 4px;
         font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
     }
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.5s;
+    .action-button:hover {
+        background-color: var(--primary-color);
+        color: white;
     }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    /* Responsive tabs */
-    @media (max-width: 480px) {
-        .account-tabs {
-            flex-direction: column;
-            border-bottom: none;
-        }
-        .account-tabs .tab-link {
-            width: 100%;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            border-radius: 0;
-        }
+    .form-section {
+        margin-top: 2rem;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
     }
 
     /* --- Home Page Book Grid Width --- */
@@ -195,6 +228,7 @@
 <body data-theme="light"> 
 
 <header class="site-header">
+    
     <div class="container header-inner">
         {% if user.is_authenticated %}
             <a class="brand" href="{% url 'books_app:home' %}">eBooks</a>
@@ -270,6 +304,19 @@
         // Show the current tab and add an "active" class to the button that opened the tab
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
+    }
+
+    // --- PWA Service Worker Registration ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register("{% static 'sw.js' %}").then(function(registration) {
+                // Registration was successful
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+                // registration failed :(
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
     }
 </script>
 </body>

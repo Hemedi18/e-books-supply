@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils import timezone
 from django.db import models
 from django.db.models.functions import Concat # Import Concat for robust string concatenation
+from django.utils.html import format_html
 from .models import RequesterProfile, BookAvailable, BookRequest
 
 # Register your models
@@ -27,14 +28,16 @@ class BookAvailableAdmin(admin.ModelAdmin):
 @admin.register(BookRequest)
 class BookRequestAdmin(admin.ModelAdmin):
     list_display = (
-        'requester', 
-        'book_requested', 
+        'requester',
+        'get_requested_book_display', # Use the custom method for clarity
+        'colored_status', # Add the new colored status display
         'status', 
         'request_date', 
         'get_whatsapp_link' # Custom method from the model
     )
+    list_editable = ('status',) # Make the status field directly editable in the list view
     list_filter = ('status', 'request_date')
-    search_fields = ('requester__whatsapp_name', 'book_requested__title')
+
     # Enhance search fields to include direct book title/author for unlinked requests
     search_fields = (
         'requester__whatsapp_name',
@@ -44,7 +47,17 @@ class BookRequestAdmin(admin.ModelAdmin):
         'book_title', # Search directly on the requested title if not linked
         'book_author' # Search directly on the requested author if not linked
     )
-    readonly_fields = ('request_date', 'fulfillment_date')
+    readonly_fields = ('request_date', 'fulfillment_date', 'requester', 'book_title', 'book_author')
+
+    # Organize the admin detail view for better clarity
+    fieldsets = (
+        ('Request Details', {
+            'fields': ('requester', ('book_title', 'book_author'), 'status', 'request_date')
+        }),
+        ('Fulfillment (Admin Use)', {
+            'fields': ('book_requested', 'fulfillment_date', 'admin_notes')
+        }),
+    )
     
     # Add a custom method to display the requested book details
     def get_requested_book_display(self, obj):
@@ -58,6 +71,21 @@ class BookRequestAdmin(admin.ModelAdmin):
     get_requested_book_display.short_description = 'Requested Book'
     get_requested_book_display.admin_order_field = 'book_title' # Allows sorting by this field
     
+    @admin.display(description='Status', ordering='status')
+    def colored_status(self, obj):
+        """
+        Displays the status field with a color for quick visual scanning.
+        Green for fulfilled, Red for pending/rejected states.
+        """
+        if obj.status == 'FULFILLED':
+            color = 'green'
+        elif obj.status in ['PENDING', 'REJECTED', 'CONTACT']:
+            color = 'red'
+        else:
+            color = 'black' # Fallback
+        
+        return format_html('<b style="color: {};">{}</b>', color, obj.get_status_display())
+
     # Add the custom action
     actions = ['mark_as_fulfilled']
 

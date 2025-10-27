@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.safestring import mark_safe
+from django.utils.safestring import mark_safe # This is needed for rendering HTML in templates
 from django.contrib.auth.models import User
 from urllib.parse import quote
 
@@ -94,7 +94,7 @@ class BookRequest(models.Model):
     fulfillment_date = models.DateTimeField(null=True, blank=True)
     
     # Notes for the admin (you) to track issues or confirmation details.
-    admin_notes = models.TextField(blank=True, help_text="Notes on fulfillment, e.g., 'Sent via WhatsApp on 2025-10-23'.")
+    admin_notes = models.TextField(blank=True, help_text="Notes on fulfillment, 'Sent via WhatsApp on 2025-10-23'.")
 
     def __str__(self):
         return f"Request by {self.requester.whatsapp_name} for {self.book_title}"
@@ -115,6 +115,21 @@ class BookRequest(models.Model):
     
     get_whatsapp_link.allow_tags = True
     get_whatsapp_link.short_description = 'WhatsApp'
+
+    def colored_status(self):
+        """
+        Displays the status field with a color for quick visual scanning.
+        Green for fulfilled, Red for pending/rejected states.
+        """
+        if self.status == 'FULFILLED':
+            color = 'green'
+        elif self.status in ['PENDING', 'REJECTED', 'CONTACT']:
+            color = 'red'
+        else:
+            color = 'black'  # Fallback
+
+        return mark_safe(f'<b style="color: {color};">{self.get_status_display()}</b>')
+    colored_status.short_description = 'Status'
 
     class Meta:
         ordering = ['request_date']

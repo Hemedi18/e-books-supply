@@ -14,7 +14,7 @@
         <div class="request-item">
           <h3>{{ request.book_title }}</h3>
           <p>by {{ request.book_author|default:"N/A" }}</p>
-          <p><strong>Status:</strong> {{ request.get_status_display }}</p>
+          <p><strong>Status:</strong> {{ request.colored_status }}</p>
           <p><strong>Requested on:</strong> {{ request.request_date|date:"F j, Y" }}</p>
         </div>
       {% endfor %}

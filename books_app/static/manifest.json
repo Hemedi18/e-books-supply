@@ -1,0 +1,22 @@
+{
+    "short_name": "eBooks",
+    "name": "eBooks Supply",
+    "icons": [
+        {
+            "src": "/static/images/icon-192x192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/images/icon-512x512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any maskable"
+        }
+    ],
+    "start_url": "/dashboard/",
+    "display": "standalone",
+    "background_color": "#f0f2f5",
+    "theme_color": "#4a90e2"
+}

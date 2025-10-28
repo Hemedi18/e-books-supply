@@ -18,6 +18,11 @@
   <link rel="icon" type="image/x-icon" href="{% static "images/icon.ico" %}" >
 
   <style>
+    /* Ensure the body has position relative for fixed elements to work correctly */
+    body {
+        position: relative;
+    }
+
     /* --- Form Styling --- */
     .form-container {
         max-width: 450px;
@@ -330,6 +335,11 @@
     </a>
 {% endif %}
 
+<!-- Download Progress Bar -->
+<div id="downloadProgressBar" class="download-progress-bar"></div>
+
+
+
 <script src="{% static 'js/main.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -368,6 +378,26 @@
             });
         });
 
+        // --- Download Progress Bar Logic ---
+        const downloadProgressBar = document.getElementById('downloadProgressBar');
+        const downloadButtons = document.querySelectorAll('.download-button');
+
+        function showDownloadProgress() {
+            if (downloadProgressBar) {
+                downloadProgressBar.classList.add('active');
+            }
+        }
+
+        function hideDownloadProgress() {
+            if (downloadProgressBar) {
+                downloadProgressBar.classList.remove('active');
+            }
+        }
+
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', showDownloadProgress);
+        });
+        hideDownloadProgress(); // Hide on initial page load
         // --- PWA Service Worker Registration ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -406,4 +436,3 @@
 </script>
 </body>
 </html>
-

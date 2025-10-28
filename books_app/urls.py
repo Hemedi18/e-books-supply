@@ -11,6 +11,7 @@ urlpatterns = [
     path('community-requests/', views.all_requests_view, name='all_requests'),
     path('upload-book/', views.upload_book_view, name='upload_book'),
     path('upload-book/for-request/<int:request_id>/', views.upload_book_view, name='upload_for_request'),
+    path('upload-from-url/', views.upload_book_from_url_view, name='upload_from_url'),
     path('about/', views.about, name='about'),
     path('help/', views.help, name='help'),
     path('contact/', views.contact, name='contact'),

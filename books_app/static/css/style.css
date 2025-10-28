@@ -480,10 +480,12 @@ a:hover {
     font-weight: bold;
     color: var(--text-color);
 }
-.styled-form input[type="text"],
-.styled-form input[type="email"] {
+.styled-form input,
+.styled-form select,
+.styled-form textarea {
     width: 100%;
     padding: 12px;
+    margin-bottom: 1rem; /* Add space below each input */
     border: 1px solid var(--border-color);
     border-radius: 5px;
     background-color: var(--background-color);
@@ -491,7 +493,7 @@ a:hover {
     font-size: 1rem;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
-.styled-form input:focus {
+.styled-form input:focus, .styled-form select:focus, .styled-form textarea:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.2);
@@ -504,6 +506,15 @@ a:hover {
 }
 .styled-form button {
     margin-top: 1rem;
+    width: 100%; /* Make button full width */
+}
+
+/* Remove default <p> margins when using form.as_p */
+.styled-form p {
+    margin-bottom: 0;
+}
+.styled-form p:has(input) {
+    margin-bottom: 0.5rem; /* Add space only if p contains an input */
 }
 .form-footer {
     margin-top: 1.5rem;
@@ -594,6 +605,12 @@ a:hover {
     background-color: #d32f2f; /* Darker red */
 }
 
+.logout-card {
+    margin-top: 2rem;
+    text-align: center;
+    background: transparent;
+    border: none;
+}
 /* --- MESSAGES FRAMEWORK STYLES --- */
 .messages {
     list-style: none;
@@ -611,4 +628,70 @@ a:hover {
 }
 .message.error {
     background-color: #dc3545;
+}
+
+/* --- NEW TAB STYLES FOR ACCOUNT PAGE --- */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+
+.tab-link {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: var(--text-color);
+    opacity: 0.7;
+    font-size: 1rem;
+    font-weight: bold;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.tab-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; /* Position on top of the nav border */
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.tab-link.active,
+.tab-link:hover {
+    opacity: 1;
+}
+
+.tab-link.active::after {
+    width: 100%;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeInUp 0.5s;
+}
+
+/* Responsive Tabs */
+@media (max-width: 600px) {
+    .tab-nav {
+        flex-direction: column;
+        border-bottom: none;
+    }
+    .tab-link {
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .tab-link::after {
+        /* Use a left border instead of bottom for mobile */
+        bottom: 0;
+        left: -2px;
+        width: 2px;
+        height: 0;
+        transition: height 0.3s ease;
+    }
+    .tab-link.active::after { width: 2px; height: 100%; }
 }

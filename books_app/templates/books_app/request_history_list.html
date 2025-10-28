@@ -1,0 +1,18 @@
+<div class="account-card">
+    <h2>My Request History</h2>
+    <p>Here is the history of all the books you have requested.</p>
+
+    {% if requests_list %}
+        <div class="requests-list">
+            {% for request in requests_list %}
+                <div class="request-item">
+                    <h3>{{ request.book_title }} <span class="request-author">by {{ request.book_author|default:"N/A" }}</span></h3>
+                    <p><small>Requested on: {{ request.request_date|date:"F j, Y" }}</small></p>
+                    <p><strong>Status:</strong> {{ request.colored_status }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You have not made any book requests yet. <a href="{% url 'books_app:request_book' %}">Request one now!</a></p>
+    {% endif %}
+</div>

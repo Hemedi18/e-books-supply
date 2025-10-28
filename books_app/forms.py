@@ -5,8 +5,21 @@ from .models import RequesterProfile, BookRequest, BookAvailable
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    whatsapp_number = forms.CharField(max_length=20, help_text="Required. Full phone number including country code, e.g., +255712345678.")
+    whatsapp_number = forms.CharField(
+        max_length=20, 
+        label="WhatsApp Number",
+        widget=forms.TextInput(attrs={'placeholder': 'e.g., +255712345678'})
+    )
     profile_picture = forms.ImageField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs['placeholder'] = 'Choose a unique username'
+        self.fields['email'].widget.attrs['placeholder'] = 'your.email@example.com'
+        # Remove default password help text
+        self.fields['password'].help_text = None
+        self.fields['password2'].help_text = None
+        self.fields['password2'].label = "Confirm Password"
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -38,11 +51,28 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email']
+        widgets = {
+            'email': forms.EmailInput(attrs={'placeholder': 'your.email@example.com'})
+        }
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = RequesterProfile
         fields = ['whatsapp_number', 'profile_picture']
+        widgets = {
+            'whatsapp_number': forms.TextInput(attrs={'placeholder': 'e.g., +255712345678'})
+        }
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    """A custom password change form to remove help text and add placeholders."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs['placeholder'] = 'Enter your current password'
+        self.fields['new_password1'].widget.attrs['placeholder'] = 'Enter your new password'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'Confirm your new password'
+        # Remove all help text
+        for field in self.fields.values():
+            field.help_text = None
 
 class BookRequestForm(forms.ModelForm):
     class Meta:
@@ -59,4 +89,16 @@ class BookUploadForm(forms.ModelForm):
     class Meta:
         model = BookAvailable
         fields = ['title', 'author', 'book_file', 'cover_image', 'published_date']
+        widgets = {'published_date': forms.DateInput(attrs={'type': 'date'})}
+
+class BookUploadURLForm(forms.ModelForm):
+    """
+    A form for creating a book entry by providing a URL to the book file.
+    """
+    book_url = forms.URLField(label="Book URL", widget=forms.URLInput(attrs={'placeholder': 'https://example.com/book.pdf'}))
+
+    class Meta:
+        model = BookAvailable
+        # 'book_file' is excluded because we're providing a URL instead.
+        fields = ['title', 'author', 'cover_image', 'published_date']
         widgets = {'published_date': forms.DateInput(attrs={'type': 'date'})}

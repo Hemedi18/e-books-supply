@@ -1,15 +1,24 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import BookAvailable, RequesterProfile, BookRequest
 from .forms import (
-    BookRequestForm, CustomUserCreationForm, UserUpdateForm, BookUploadForm,
-    ProfileUpdateForm
+    BookRequestForm, CustomUserCreationForm, UserUpdateForm, BookUploadForm, BookUploadURLForm, CustomPasswordChangeForm,
+    ProfileUpdateForm,
 )
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth import login, logout, update_session_auth_hash, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
+import requests
+from django.core.files.base import ContentFile
+import os
+
+# Check if the PDF processing library is installed.
+try:
+    import fitz  # PyMuPDF
+except ImportError:
+    fitz = None
 
 # Create your views here.
 
@@ -81,7 +90,18 @@ def upload_book_view(request, request_id=None):
     if request.method == 'POST':
         form = BookUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            new_book = form.save() # The book is now in the catalog
+            # Check if the uploaded file is a PDF and if the library is missing
+            uploaded_file = request.FILES.get('book_file')
+            if uploaded_file and uploaded_file.name.lower().endswith('.pdf') and not fitz:
+                messages.warning(request, "The PDF processing library (PyMuPDF) is not installed. The book was saved, but the cover could not be auto-generated.")
+
+            # The model's save() method will handle the cover generation if fitz is available.
+            new_book = form.save()
+
+            # Check if the model's save method attached a cover generation error
+            if hasattr(new_book, 'cover_generation_error'):
+                error_message = f"Book '{new_book.title}' was saved, but the cover could not be generated. Error: {new_book.cover_generation_error}"
+                messages.error(request, error_message)
             
             # If this upload is meant to fulfill a specific request
             if book_request_to_fulfill:
@@ -91,12 +111,53 @@ def upload_book_view(request, request_id=None):
                 book_request_to_fulfill.save()
                 messages.success(request, f"Thank you! You have successfully uploaded '{new_book.title}' and fulfilled the request.")
                 return redirect('books_app:all_requests')
-
-            messages.success(request, f"Thank you for your contribution! '{new_book.title}' has been added to the catalog.")
+            
+            # Only show the generic success message if there wasn't a cover error
+            elif not hasattr(new_book, 'cover_generation_error'):
+                messages.success(request, f"Thank you for your contribution! '{new_book.title}' has been added to the catalog.")
             return redirect('books_app:home')
     else:
-        form = BookUploadForm(initial={'title': book_request_to_fulfill.book_title if book_request_to_fulfill else '', 'author': book_request_to_fulfill.book_author if book_request_to_fulfill else ''})
+        # Pre-populate the form with data from the request if it exists.
+        initial_data = {}
+        if book_request_to_fulfill:
+            initial_data['title'] = book_request_to_fulfill.book_title
+            initial_data['author'] = book_request_to_fulfill.book_author
+        form = BookUploadForm(initial=initial_data)
     return render(request, 'books_app/upload_book.html', {'form': form, 'request_to_fulfill': book_request_to_fulfill})
+
+@login_required
+def upload_book_from_url_view(request):
+    """
+    Handles creating a book entry by downloading a file from a URL.
+    """
+    if request.method == 'POST':
+        form = BookUploadURLForm(request.POST, request.FILES)
+        if form.is_valid():
+            book_url = form.cleaned_data['book_url']
+            try:
+                # Download the book file from the URL
+                response = requests.get(book_url, stream=True, timeout=30)
+                response.raise_for_status()  # Raise an exception for bad status codes
+
+                # Create a new book instance but don't save to DB yet
+                new_book = form.save(commit=False)
+
+                # Get the filename from the URL
+                file_name = os.path.basename(book_url.split('?')[0])
+                if not file_name:
+                    file_name = "downloaded_book.pdf" # Fallback filename
+
+                # Save the downloaded content to the book_file field
+                new_book.book_file.save(file_name, ContentFile(response.content), save=True)
+
+                messages.success(request, f"Successfully downloaded and saved '{new_book.title}' from the URL.")
+                return redirect('books_app:home')
+
+            except requests.exceptions.RequestException as e:
+                messages.error(request, f"Failed to download the book from the URL. Error: {e}")
+    else:
+        form = BookUploadURLForm()
+    return render(request, 'books_app/upload_from_url.html', {'form': form})
 
 @login_required
 def about(request):
@@ -127,11 +188,19 @@ def account(request):
         }
     )
 
+    # Fetch the user's request history to display in a tab.
+    # This needs to be done for both GET and POST requests.
+    try:
+        requests_list = BookRequest.objects.filter(requester=profile).order_by('-request_date')
+    except RequesterProfile.DoesNotExist:
+        # This is a safe fallback, though get_or_create should prevent it.
+        requests_list = []
+
     if request.method == 'POST':
         # Initialize all forms to ensure they exist in the context
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=profile)
-        password_form = PasswordChangeForm(request.user)
+        password_form = CustomPasswordChangeForm(request.user)
 
         # Check which form is being submitted
         if 'update_profile' in request.POST:
@@ -144,7 +213,7 @@ def account(request):
                 return redirect('books_app:account')
         
         elif 'change_password' in request.POST:
-            password_form = PasswordChangeForm(request.user, request.POST)
+            password_form = CustomPasswordChangeForm(request.user, request.POST)
             if password_form.is_valid():
                 user = password_form.save()
                 update_session_auth_hash(request, user)  # Important to keep the user logged in
@@ -155,8 +224,13 @@ def account(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=profile)
-        password_form = PasswordChangeForm(request.user)
-    return render(request, 'books_app/account.html', {'u_form': u_form, 'p_form': p_form, 'password_form': password_form})
+        password_form = CustomPasswordChangeForm(request.user)
+    
+    context = {
+        'u_form': u_form, 'p_form': p_form, 
+        'password_form': password_form, 'requests_list': requests_list
+    }
+    return render(request, 'books_app/account.html', context)
 
 
 # --- Authentication Views ---

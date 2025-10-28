@@ -2,6 +2,14 @@ from django.db import models
 from django.utils.safestring import mark_safe # This is needed for rendering HTML in templates
 from django.contrib.auth.models import User
 from urllib.parse import quote
+import os
+from django.core.files.base import ContentFile
+try:
+    from pdf2image import convert_from_path
+    import io
+except ImportError:
+    # This will be None if pdf2image is not installed
+    convert_from_path = None
 
 # --- Helper Model: Profile of the WhatsApp Requester ---
 class RequesterProfile(models.Model):
@@ -59,8 +67,7 @@ class BookAvailable(models.Model):
     
     class Meta:
         verbose_name = "Available Book"
-        verbose_name_plural = "Available Books"
-
+        verbose_name_plural = "Available Books"    
 
 # --- Transactional Model: The Request/Order ---
 class BookRequest(models.Model):

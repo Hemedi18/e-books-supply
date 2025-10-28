@@ -1,0 +1,17 @@
+{% extends "books_app/base.html" %}
+
+{% block title %}Upload Book from URL{% endblock %}
+
+{% block content %}
+<div class="content-page styled-form">
+    <h1>Contribute a Book from a URL</h1>
+    <p>Provide a direct link to a book file (e.g., PDF) and fill in its details.</p>
+    <p class="form-footer">Need to upload a file from your computer? <a href="{% url 'books_app:upload_book' %}">Switch to file upload</a>.</p>
+
+    <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button-link">Upload from URL</button>
+    </form>
+</div>
+{% endblock %}

@@ -3,47 +3,83 @@
 {% block title %}My Account - {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h2>My Account</h2>
-
-    <!-- Tab links -->
-    <div class="account-tabs">
-        <button class="tab-link active" onclick="openTab(event, 'Profile')">Profile Details</button>
-        <button class="tab-link" onclick="openTab(event, 'Password')">Change Password</button>
+<div class="account-page">
+    <div class="profile-card">
+        <div class="profile-picture-container">
+            {% if user.requesterprofile.profile_picture %}
+                <img src="{{ user.requesterprofile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+            {% else %}
+                <img src="https://i.pravatar.cc/100?u={{ user.username }}" alt="Default Profile Picture" class="profile-picture">
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <h2>{{ user.username }}</h2>
+            <p class="profile-meta">{{ user.email }}</p>
+            <p class="profile-meta">{{ user.requesterprofile.whatsapp_number|default:"No WhatsApp number" }}</p>
+        </div>
     </div>
 
-    <!-- Tab content for Profile -->
-    <div id="Profile" class="tab-content" style="display: block;">
-        <h3>Update Your Profile</h3>
-        <p>Keep your personal and contact information up to date.</p>
-        
-        <form method="post" enctype="multipart/form-data" style="margin-top: 1.5rem;">
-            {% csrf_token %}
-            {{ u_form.as_p }}
-            {{ p_form.as_p }}
-            <button type="submit" name="update_profile">Save Profile Changes</button>
-        </form>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+    <!-- Tab Content -->
+    <div id="ProfileSettings" class="tab-content" style="display: block;">
+        <div class="account-card">
+            <h2>Update Your Profile</h2>
+            <p>Change your username, email, WhatsApp number, or profile picture.</p>
+            <div class="styled-form">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ u_form.as_p }}
+                    {{ p_form.as_p }}
+                    <button type="submit" name="update_profile" class="button-link">Update Profile</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- Tab content for Password -->
-    <div id="Password" class="tab-content">
-        <h3>Change Your Password</h3>
-        <p>For your security, we recommend choosing a strong password that you don't use elsewhere.</p>
+    <div id="ChangePassword" class="tab-content">
+        <div class="account-card">
+            <h2>Set a New Password</h2>
+            <p>For your security, choose a strong password that you don't use elsewhere.</p>
+            <div class="styled-form">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ password_form.as_p }}
+                    <button type="submit" name="change_password" class="button-link">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        <form method="post" style="margin-top: 1.5rem;">
+    <div id="RequestHistory" class="tab-content">
+        {% include 'books_app/request_history_list.html' %}
+    </div>
+
+
+    <div class="account-card logout-card">
+        <form action="{% url 'books_app:logout' %}" method="post">
             {% csrf_token %}
-            {{ password_form.as_p }}
-            <button type="submit" name="change_password">Update Password</button>
+            <button type="submit" class="button-link logout">Log Out</button>
         </form>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    // If there are password errors, open the password tab on page load
-    {% if password_form.errors %}
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('.tab-link[onclick*="Password"]').click();
-        });
-    {% endif %}
+    // On page load, check for a hash and open the corresponding tab
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.location.hash) {
+            const tabName = window.location.hash.substring(1); // e.g., "RequestHistory"
+            document.querySelector(`.tab-link[onclick*="'${tabName}'"]`).click();
+        }
+    });
 </script>
 {% endblock %}

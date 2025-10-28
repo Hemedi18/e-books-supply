@@ -10,6 +10,7 @@
     {% else %}
         <h1>Contribute a New Book</h1>
         <p>Add a new book to our community catalog. Please provide as much detail as possible.</p>
+        <p class="form-footer">Want to upload from a URL instead? <a href="{% url 'books_app:upload_from_url' %}">Switch to URL upload</a>.</p>
     {% endif %}
 
     <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">

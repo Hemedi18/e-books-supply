@@ -332,68 +332,78 @@
 
 <script src="{% static 'js/main.js' %}"></script>
 <script>
-    // --- Tabbed Interface for Account Page ---
-    function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Tabbed Interface for Account Page ---
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-        // Hide all tab content
-        tabcontent = document.getElementsByClassName("tab-content");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
+        function openTab(tabName) {
+            // Hide all tab content
+            tabContents.forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Remove 'active' class from all links
+            tabLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show the selected tab content
+            const selectedTabContent = document.getElementById(tabName);
+            if (selectedTabContent) {
+                selectedTabContent.style.display = 'block';
+            }
+
+            // Add 'active' class to the clicked link
+            const selectedTabLink = document.querySelector(`.tab-link[data-tab="${tabName}"]`);
+            if (selectedTabLink) {
+                selectedTabLink.classList.add('active');
+            }
         }
 
-        // Remove the "active" class from all tab links
-        tablinks = document.getElementsByClassName("tab-link");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-
-        // Show the current tab and add an "active" class to the button that opened the tab
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-    }
-
-    // --- PWA Service Worker Registration ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register("{% static 'sw.js' %}").then(function(registration) {
-                // Registration was successful
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-                // registration failed :(
-                console.log('ServiceWorker registration failed: ', err);
+        tabLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const tabName = link.getAttribute('data-tab');
+                openTab(tabName);
             });
         });
-    }
 
-    // --- Custom PWA Install Prompt ---
-    let deferredPrompt;
-    const installButton = document.getElementById('install-app-btn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent the mini-infobar from appearing on mobile
-        e.preventDefault();
-        // Stash the event so it can be triggered later.
-        deferredPrompt = e;
-        // Update UI to notify the user they can install the PWA
-        if (installButton) {
-            installButton.style.display = 'block';
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register("{% static 'sw.js' %}").then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
         }
-    });
 
-    if (installButton) {
-        installButton.addEventListener('click', async () => {
-            // Hide the app provided install promotion
-            installButton.style.display = 'none';
-            // Show the install prompt
-            deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            // We've used the prompt, and can't use it again, throw it away
-            deferredPrompt = null;
+        // --- Custom PWA Install Prompt ---
+        let deferredPrompt;
+        const installButton = document.getElementById('install-app-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installButton) {
+                installButton.style.display = 'block';
+            }
         });
-    }
+
+        if (installButton) {
+            installButton.addEventListener('click', async () => {
+                installButton.style.display = 'none';
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+            });
+        }
+
+        {% block extra_js %}{% endblock %}
+    });
 </script>
 </body>
 </html>
+

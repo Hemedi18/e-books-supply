@@ -87,16 +87,27 @@ class BookUploadForm(forms.ModelForm):
     """
     A form for users to upload new books to the catalog.
     """
+    cover_image = forms.ImageField(
+        label="Cover Image (Optional)",
+        help_text="If you leave this blank, the system will try to find a cover automatically.",
+        required=False
+    )
+
     class Meta:
         model = BookAvailable
         fields = ['title', 'author', 'book_file', 'cover_image', 'published_date']
-        widgets = {'published_date': forms.DateInput(attrs={'type': 'date'})}
+        widgets = {'published_date': forms.DateInput(attrs={'type': 'date'}),}
 
 class BookUploadURLForm(forms.ModelForm):
     """
     A form for creating a book entry by providing a URL to the book file.
     """
     book_url = forms.URLField(label="Book URL", widget=forms.URLInput(attrs={'placeholder': 'https://example.com/book.pdf'}))
+    cover_image = forms.ImageField(
+        label="Cover Image (Optional)",
+        help_text="If you leave this blank, the system will try to find a cover automatically.",
+        required=False
+    )
 
     class Meta:
         model = BookAvailable

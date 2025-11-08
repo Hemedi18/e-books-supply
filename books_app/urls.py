@@ -4,6 +4,8 @@ from . import views
 app_name = 'books_app'
 
 urlpatterns = [
+    path('book/<int:pk>/', views.book_detail_view, name='book_detail'),
+    path('download/book/<int:pk>/', views.download_book_view, name='download_book'),
     path('', views.home, name='home'),
     path('dashboard/', views.home, name='home'), # Alias for start_url
     path('request/', views.request_book, name='request_book'),

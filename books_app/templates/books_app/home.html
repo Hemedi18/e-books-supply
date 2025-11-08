@@ -1,5 +1,7 @@
 {% extends "books_app/base.html" %}
 
+{% load static %}
+
 {% block body_class %}home-page{% endblock %}
 {# By adding a class to the body, we can apply page-specific styles from base.html #}
  
@@ -14,7 +16,7 @@
   <!-- Search Form -->
   <form method="get" action="{% url 'books_app:home' %}" class="search-form">
     <input type="text" name="q" placeholder="Search by title or author..." value="{{ query|default:'' }}">
-    <button type="submit">Search</button>
+    <button type="submit" title="Search">🔍</button>
   </form>
 
   <!-- This is the grid container -->
@@ -22,23 +24,42 @@
     {% for book in books %}
         <!-- This is the new book item card -->
         <div class="book-item">
-            {% if book.cover_image %}
-                <img src="{{ book.cover_image.url }}" alt="Cover for {{ book.title }}" class="book-cover">
-            {% else %}
-                <!-- Placeholder for books without an image -->
-                <div class="book-cover" style="background-color: #e9ecef; display: flex; align-items: center; justify-content: center;">
-                    <span>No Image</span>
-                </div>
-            {% endif %}
+            <a href="{% url 'books_app:book_detail' pk=book.pk %}" class="book-cover-link">
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="Cover for {{ book.title }}" class="book-cover">
+                {% else %}
+                    <!-- Placeholder for books without an image -->
+                    <div class="book-cover placeholder">
+                        <span>No Image</span>
+                    </div>
+                {% endif %}
+            </a>
             <div class="book-details">
                 <h2>{{ book.title }}</h2>
                 <p>by {{ book.author }}</p>
+                {% if book.get_file_size %}
+                    <p class="book-meta">Size: {{ book.get_file_size }}</p>
+                {% endif %}
             </div>
-            <!-- Download button for the actual book file -->
-            {% if book.book_file %}
-                <a href="{{ book.book_file.url }}" class="download-button" download>Download Book</a>
-            {% endif %}
-            
+            <!-- Action buttons -->
+            <div class="book-actions">
+                <div class="action-item">
+                    <a href="{{ book.book_file.url }}" class="button-link preview" title="Preview in new tab" target="_blank">
+                        <lord-icon src="https://cdn.lordicon.com/tyounuzx.json" trigger="hover" colors="primary:var(--primary-color),secondary:var(--accent-color)" style="width:40px;height:40px"></lord-icon>
+                    </a>
+                    <span class="action-count">{{ book.view_count }} views</span>
+                </div>
+                <div class="action-item">
+                    {% if book.book_file %}
+                        <a href="{% url 'books_app:download_book' pk=book.pk %}" class="button-link download-button" title="Download">
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                        <span class="action-count">{{ book.download_count }} downloads</span>
+                    {% endif %}
+                </div>
+            </div>            
         </div>
     {% empty %}
         <div class="no-results">

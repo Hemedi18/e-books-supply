@@ -297,23 +297,50 @@
         <nav class="main-nav" aria-label="Main navigation">
             <ul>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'books_app:home' %}">Dashboard</a></li>
-                    <li><a href="{% url 'books_app:request_book' %}">Request a Book</a></li>
-                    <li><a href="{% url 'books_app:my_requests' %}">My Requests</a></li>
-                    <li><a href="{% url 'books_app:all_requests' %}">Community Requests</a></li>
-                    <li><a href="{% url 'books_app:about' %}">About</a></li>
-                    <li><a href="{% url 'books_app:account' %}">My Account</a></li>
-                    <li><a href="{% url 'books_app:logout' %}">Log Out</a></li>
+                    <li><a href="{% url 'books_app:home' %}" title="Dashboard">
+                        <lord-icon id="icon-dashboard" src="https://cdn.lordicon.com/osuxyevn.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        Dashboard
+                    </a></li>
+                    <li><a href="{% url 'books_app:request_book' %}" title="Request a Book">
+                        <lord-icon id="icon-request" src="https://cdn.lordicon.com/rmjnvgsm.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        Request
+                    </a></li>
+                    <li><a href="{% url 'books_app:my_requests' %}" title="My Requests">
+                        <lord-icon id="icon-my-requests" src="https://cdn.lordicon.com/sbiheqdr.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        My Requests
+                    </a></li>
+                    <li><a href="{% url 'books_app:all_requests' %}" title="Community Requests">
+                        <lord-icon id="icon-community" src="https://cdn.lordicon.com/iikoxwld.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        Community
+                    </a></li>
+                    <li><a href="{% url 'books_app:about' %}" title="About">
+                        <lord-icon id="icon-about" src="https://cdn.lordicon.com/jnzbbkqr.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        About
+                    </a></li>
+                    <li><a href="{% url 'books_app:account' %}" title="My Account">
+                        <lord-icon id="icon-account" src="https://cdn.lordicon.com/bgebyztw.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        Account
+                    </a></li>
+                    <li><a href="{% url 'books_app:logout' %}" title="Log Out">
+                        <lord-icon id="icon-logout" src="https://cdn.lordicon.com/gwvmctbb.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        Log Out
+                    </a></li>
                 {% else %}
-                    <li style="--delay: 0.1s;"><a href="{% url 'books_app:login' %}">Login</a></li>
-                    <li style="--delay: 0.2s;"><a href="{% url 'books_app:signup' %}">Sign Up</a></li>
+                    <li style="--delay: 0.1s;"><a href="{% url 'books_app:login' %}" title="Login">
+                        <lord-icon id="icon-login" src="https://cdn.lordicon.com/pdwpcpva.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        Login
+                    </a></li>
+                    <li style="--delay: 0.2s;"><a href="{% url 'books_app:signup' %}" title="Sign Up">
+                        <lord-icon id="icon-signup" src="https://cdn.lordicon.com/wloilxuq.json" trigger="hover" style="width:25px;height:25px"></lord-icon>
+                        Sign Up
+                    </a></li>
                 {% endif %}
             </ul>
         </nav>
     </div>
 </header>
 
-<main class="container">
+<main>
     {% block content %}{% endblock %}
 </main>
 
@@ -338,9 +365,16 @@
 <!-- Download Progress Bar -->
 <div id="downloadProgressBar" class="download-progress-bar"></div>
 
+<!-- Download Started Popup Notification -->
+<div class="download-popup">
+    <p>Your download has begun.</p>
+</div>
 
 
 <script src="{% static 'js/main.js' %}"></script>
+<!-- Lordicon Animated Icons Script -->
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- Tabbed Interface for Account Page ---
@@ -378,26 +412,41 @@
             });
         });
 
-        // --- Download Progress Bar Logic ---
+        // --- Download Logic (Progress Bar & Popup) ---
         const downloadProgressBar = document.getElementById('downloadProgressBar');
         const downloadButtons = document.querySelectorAll('.download-button');
+        const downloadPopup = document.querySelector('.download-popup');
 
-        function showDownloadProgress() {
-            if (downloadProgressBar) {
-                downloadProgressBar.classList.add('active');
-            }
+        // Ensure popup is hidden on page load
+        if (downloadPopup) {
+            downloadPopup.classList.remove('show');
         }
 
-        function hideDownloadProgress() {
-            if (downloadProgressBar) {
-                downloadProgressBar.classList.remove('active');
-            }
+        if (downloadButtons.length > 0) {
+            downloadButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 1. Show progress bar if it exists
+                    if (downloadProgressBar) {
+                        downloadProgressBar.classList.add('active');
+                    }
+
+                    // 2. Show popup if it exists
+                    if (downloadPopup) {
+                        downloadPopup.classList.add('show');
+                        // 3. Hide popup after 4 seconds
+                        setTimeout(() => {
+                            downloadPopup.classList.remove('show');
+                        }, 4000);
+                    }
+                });
+            });
         }
 
-        downloadButtons.forEach(button => {
-            button.addEventListener('click', showDownloadProgress);
-        });
-        hideDownloadProgress(); // Hide on initial page load
+        // Hide progress bar on initial page load
+        if (downloadProgressBar) {
+            downloadProgressBar.classList.remove('active');
+        }
+
         // --- PWA Service Worker Registration ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -414,22 +463,47 @@
         const installButton = document.getElementById('install-app-btn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
+            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            if (installButton) {
+            // Show the install button only if the user hasn't dismissed it before.
+            if (installButton && !localStorage.getItem('installPromptDismissed')) {
                 installButton.style.display = 'block';
             }
         });
 
         if (installButton) {
             installButton.addEventListener('click', async () => {
+                // Hide the button permanently
                 installButton.style.display = 'none';
+                // Set a flag in local storage to remember the user has clicked it.
+                localStorage.setItem('installPromptDismissed', 'true');
+                // Show the install prompt
                 deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
                 const { outcome } = await deferredPrompt.userChoice;
                 console.log(`User response to the install prompt: ${outcome}`);
+                // We've used the prompt, and can't use it again, throw it away
                 deferredPrompt = null;
             });
         }
+
+        // --- Lordicon Color Updater ---
+        // This function updates icon colors based on the current theme.
+        function updateIconColors() {
+            const isDarkMode = document.body.getAttribute('data-theme') === 'dark';
+            const iconColor = isDarkMode ? '#f0f0f0' : '#333333'; // White for dark, Black for light
+            document.querySelectorAll('lord-icon').forEach(icon => {
+                icon.colors = `primary:${iconColor}`;
+            });
+        }
+
+        // Update icons on initial load
+        updateIconColors();
+
+        // Update icons when the theme toggle is clicked
+        document.getElementById('theme-toggle').addEventListener('click', updateIconColors);
 
         {% block extra_js %}{% endblock %}
     });

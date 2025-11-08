@@ -126,6 +126,11 @@ a:hover {
 
 .main-nav a {
     color: var(--text-color);
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Vertically center icon and text */
+    gap: 0.5rem; /* Space between icon and text */
+    padding: 0.5rem 0;
+    font-size: 1rem;
 }
 
 .main-nav a::after {
@@ -263,13 +268,16 @@ a:hover {
     .main-nav {
         display: none; 
         position: absolute;
-        top: 70px; 
-        left: 0;
-        width: 100%;
+        top: 65px; /* Align with header bottom */
+        right: 1rem; /* Position it from the right edge with some space */
+        width: auto; /* Take necessary width */
+        min-width: 250px; /* Ensure it's not too narrow */
         background-color: rgba(var(--glass-bg-base), 0.95); /* opacity kubwa zaidi ya Glass */
         backdrop-filter: blur(15px);
         box-shadow: var(--header-shadow);
-        border-top: 1px solid var(--border-color);
+        border-left: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 8px; /* Rounded corners all around */
     }
     
     /* Hali ya Open: Fanya menyu ionekane na animation */
@@ -286,18 +294,15 @@ a:hover {
     /* Styles za Linki za Simu */
     .main-nav li {
         border-bottom: 1px solid var(--border-color);
-        width: 100%;
         transition: background-color 0.3s ease;
     }
     
     .main-nav li:hover {
         background-color: rgba(var(--primary-color), 0.1); /* Rangi laini ya hover */
     }
-
     .main-nav a {
         padding: 1rem 1.5rem;
         display: block;
-        width: 100%;
     }
     
     .main-nav a::after {
@@ -354,45 +359,88 @@ a:hover {
 .book-details {
     width: 100%;
     padding-top: 10px;
-    flex-grow: 1; /* Allows details to fill space */
+    flex-grow: 1; /* Allows details to fill vertical space */
+    display: flex;
+    flex-direction: column;
+    text-align: left; /* Align text to the left */
 }
 
 .book-details h2 {
     font-size: 1.1em;
     margin: 0 0 5px 0;
     color: var(--primary-color);
+    /* Prevent long titles from breaking the layout */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.4em; /* Reserve space for two lines to prevent layout shifts */
 }
 
 .book-details p {
     margin: 0;
-    font-size: 0.85em;
+    font-size: 0.9em; /* Slightly larger for better readability */
     color: var(--text-color);
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
-
-/* --- DOWNLOAD BUTTON STYLES --- */
-
-.download-button {
-    display: inline-block;
+.book-details .book-meta {
+    margin-top: auto; /* Push size to the bottom */
+    padding-top: 10px; /* Space above the size */
+    font-size: 0.8em;
+    font-weight: bold;
+    color: var(--primary-color);
+    opacity: 0.9;
+}
+.book-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-around; /* Distribute items evenly */
     width: 100%;
     margin-top: 15px;
-    padding: 10px 15px;
-    background-color: #28a745; 
-    color: white !important; 
-    text-align: center;
-    font-weight: bold;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
-.download-button:hover {
-    background-color: #218838; 
-    transform: translateY(-1px); 
+.action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem; /* Space between button and count text */
 }
-
-/* --- MOBILE OVERRIDE FOR 2x2 GRID --- */
+.book-actions .button-link {
+    padding: 8px;
+    font-size: 1.2rem; /* Larger font size for icons */
+    width: 50px; /* Set a fixed width for the buttons */
+    height: 50px; /* Set a fixed height for the buttons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px; /* Make them slightly rounded squares */
+}
+.book-actions .button-link lord-icon,
+.book-actions .button-link .icon-svg {
+    width: 100% !important; /* Force icon to fill the button */
+    height: 100% !important;
+}
+.book-actions .button-link.preview {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color) !important;
+}
+.book-actions .button-link.preview:hover {
+    background-color: var(--primary-color);
+    color: white !important;
+}
+.book-actions .download-button {
+    background-color: #28a745;
+}
+.book-actions .download-button:hover {
+    background-color: #218838;
+}
+.action-count {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    opacity: 0.7;
+}
 @media (max-width: 768px) {
     .book-grid {
         grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
@@ -414,10 +462,12 @@ a:hover {
         font-size: 0.9em;
     }
 
-    .download-button {
+    /* Adjust action buttons on mobile */
+    .book-actions {
         margin-top: 10px;
-        padding: 8px 10px;
-        font-size: 0.8em;
+    }
+    .book-actions .button-link {
+        font-size: 1rem; /* Slightly smaller icons on mobile cards */
     }
 }
 
@@ -470,6 +520,15 @@ a:hover {
     transform: translateY(-2px);
 }
 
+/* Make the book cover a clickable link without underline */
+.book-cover-link {
+    display: block;
+}
+.book-cover.placeholder {
+    background-color: #e9ecef; display: flex; align-items: center; justify-content: center;
+    color: #6c757d;
+}
+
 /* --- STYLED FORMS (REQUEST, MY REQUESTS) --- */
 .styled-form p {
     margin-bottom: 1rem;
@@ -520,6 +579,14 @@ a:hover {
     margin-top: 1.5rem;
     text-align: center;
     font-size: 0.9rem;
+}
+
+/* Style for Django form errors */
+.errorlist {
+    list-style-type: none;
+    padding: 0;
+    color: #dc3545; /* Red color for errors */
+    font-size: 0.9em;
 }
 
 /* --- MY REQUESTS LIST STYLES --- */
@@ -737,4 +804,138 @@ a:hover {
         transition: height 0.3s ease;
     }
     .tab-link.active::after { width: 2px; height: 100%; }
+}
+
+/* --- Download Popup Notification --- */
+.download-popup {
+    position: fixed; /* Fixed position to stay on screen */
+    bottom: -100px; /* Start off-screen */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #28a745; /* Green for success */
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 2000; /* High z-index to be on top */
+    transition: bottom 0.5s ease-in-out;
+    font-weight: bold;
+}
+
+.download-popup.show {
+    bottom: 30px; /* Slide into view */
+}
+
+/* --- BOOK DETAIL / PREVIEW PAGE --- */
+.book-detail-container {
+    display: flex;
+    gap: 2rem;
+    height: calc(100vh - 150px); /* Adjust based on header/footer height */
+    margin-top: 1rem;
+}
+
+.book-info-panel {
+    flex: 1 1 320px; /* Allow shrinking but prefer 320px */
+    display: flex;
+    flex-direction: column;
+}
+
+.book-detail-cover {
+    width: 250px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    margin-bottom: 1.5rem;
+    align-self: center; /* Keep the book cover centered */
+}
+.book-detail-cover.placeholder {
+    height: 350px;
+    width: 250px;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+.book-info-text {
+    text-align: left; /* Align all text to the left */
+    width: 100%;
+}
+
+.book-info-text h1 {
+    font-size: 1.8rem;
+    margin: 0 0 0.25rem 0;
+}
+.book-info-text .author-line {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-bottom: 1rem;
+}
+
+.book-meta-tags {
+    display: flex;
+    flex-wrap: wrap; /* Allow tags to wrap on small screens */
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.meta-tag {
+    background-color: rgba(var(--primary-color), 0.1);
+    color: var(--primary-color);
+    padding: 0.5rem 0.8rem; /* Increased padding */
+    border-radius: 15px;
+    font-size: 0.9rem; /* Slightly larger font */
+    font-weight: bold;
+}
+.meta-tag.icon-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.meta-tag .icon-svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--primary-color);
+    stroke-width: 2.5;
+}
+
+.book-info-panel .button-link {
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+.button-link.secondary-action {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color) !important;
+}
+.button-link.secondary-action:hover {
+    background-color: var(--border-color);
+}
+
+.sticky-actions .button-link {
+    font-size: 1.5rem; /* Make detail page icons larger */
+}
+
+.book-preview-panel {
+    flex-grow: 1;
+    border-left: 1px solid var(--border-color);
+    padding-left: 2rem;
+}
+
+/* --- SVG Icon Styling --- */
+.icon-svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 2.5; /* Make lines thicker */
+}
+.download-button .icon-svg {
+    stroke: white;
+}
+.fab.secondary .icon-svg {
+    stroke: var(--text-color);
+}
+.fab .icon-svg {
+    width: 32px;
+    height: 32px;
 }

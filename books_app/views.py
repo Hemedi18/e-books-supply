@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from .models import BookAvailable, RequesterProfile, BookRequest
 from .forms import (
     BookRequestForm, CustomUserCreationForm, UserUpdateForm, BookUploadForm, BookUploadURLForm, CustomPasswordChangeForm,
@@ -34,6 +34,37 @@ def home(request):
         ).distinct()
     return render(request, 'books_app/home.html', {'books': queryset, 'query': query})
 
+@login_required
+def book_detail_view(request, pk):
+    """
+    Displays a single book's details and provides a preview if it's a PDF.
+    """
+    from django.db.models import F
+
+    book = get_object_or_404(BookAvailable, pk=pk, is_available=True)
+    
+    # Increment the view count atomically to prevent race conditions
+    BookAvailable.objects.filter(pk=pk).update(view_count=F('view_count') + 1)
+    
+    # Refresh the object from the DB to get the updated count
+    book.refresh_from_db()
+
+    context = {'book': book}
+    return render(request, 'books_app/book_detail.html', context)
+
+
+@login_required
+def download_book_view(request, pk):
+    """
+    This view handles tracking the download count and then redirects to the actual file.
+    """
+    from django.db.models import F
+
+    book = get_object_or_404(BookAvailable, pk=pk)
+    BookAvailable.objects.filter(pk=pk).update(download_count=F('download_count') + 1)
+    
+    # Redirect to the actual file URL for the browser to handle the download
+    return redirect(book.book_file.url)
 @login_required
 def request_book(request):
     if request.method == 'POST':
@@ -92,29 +123,27 @@ def upload_book_view(request, request_id=None):
         if form.is_valid():
             # Check if the uploaded file is a PDF and if the library is missing
             uploaded_file = request.FILES.get('book_file')
-            if uploaded_file and uploaded_file.name.lower().endswith('.pdf') and not fitz:
-                messages.warning(request, "The PDF processing library (PyMuPDF) is not installed. The book was saved, but the cover could not be auto-generated.")
 
             # The model's save() method will handle the cover generation if fitz is available.
             new_book = form.save()
 
-            # Check if the model's save method attached a cover generation error
-            if hasattr(new_book, 'cover_generation_error'):
-                error_message = f"Book '{new_book.title}' was saved, but the cover could not be generated. Error: {new_book.cover_generation_error}"
-                messages.error(request, error_message)
-            
             # If this upload is meant to fulfill a specific request
             if book_request_to_fulfill:
                 book_request_to_fulfill.book_requested = new_book
                 book_request_to_fulfill.status = 'FULFILLED'
                 book_request_to_fulfill.fulfillment_date = timezone.now()
                 book_request_to_fulfill.save()
-                messages.success(request, f"Thank you! You have successfully uploaded '{new_book.title}' and fulfilled the request.")
+                msg = f"Thank you! You have successfully uploaded '{new_book.title}' and fulfilled the request."
+                if new_book.cover_image:
+                    messages.success(request, msg + " A cover image was found automatically!")
+                else:
+                    messages.info(request, msg + " A cover image could not be found automatically.")
                 return redirect('books_app:all_requests')
             
-            # Only show the generic success message if there wasn't a cover error
-            elif not hasattr(new_book, 'cover_generation_error'):
-                messages.success(request, f"Thank you for your contribution! '{new_book.title}' has been added to the catalog.")
+            if new_book.cover_image:
+                messages.success(request, f"Thank you! '{new_book.title}' has been added, and a cover was found automatically!")
+            else:
+                messages.info(request, f"Thank you! '{new_book.title}' has been added. A cover could not be found automatically, but you can add one later.")
             return redirect('books_app:home')
     else:
         # Pre-populate the form with data from the request if it exists.

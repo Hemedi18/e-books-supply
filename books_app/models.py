@@ -3,13 +3,14 @@ from django.utils.safestring import mark_safe # This is needed for rendering HTM
 from django.contrib.auth.models import User
 from urllib.parse import quote
 import os
+import requests
 from django.core.files.base import ContentFile
+import io
+
 try:
-    from pdf2image import convert_from_path
-    import io
+    import fitz # PyMuPDF
 except ImportError:
-    # This will be None if pdf2image is not installed
-    convert_from_path = None
+    fitz = None # Define fitz as None if the import fails
 
 # --- Helper Model: Profile of the WhatsApp Requester ---
 class RequesterProfile(models.Model):
@@ -61,9 +62,132 @@ class BookAvailable(models.Model):
 
     published_date = models.DateField(blank=True, null=True)
     is_available = models.BooleanField(default=True)
+    
+    # --- Tracking Fields ---
+    view_count = models.PositiveIntegerField(default=0, help_text="Number of times the book detail page has been viewed.")
+    download_count = models.PositiveIntegerField(default=0, help_text="Number of times the book has been downloaded.")
 
     def __str__(self):
         return f"{self.title} by {self.author}"
+
+    @property
+    def is_pdf(self):
+        """Checks if the book_file is a PDF for preview purposes."""
+        if self.book_file and self.book_file.name:
+            return self.book_file.name.lower().endswith('.pdf')
+        return False
+
+    def fetch_cover_from_google_books(self):
+        """
+        Searches the Google Books API for a cover image. It prioritizes results
+        where the author matches the one provided.
+        """
+        if not self.title:
+            return False # Cannot search without a title
+
+        # Prepare the user-provided author name for comparison (lowercase, simple)
+        user_author_normalized = self.author.lower().strip()
+
+        search_term = f"{self.title} {self.author}"
+        api_url = f"https://www.googleapis.com/books/v1/volumes?q={quote(search_term)}"
+
+        try:
+            response = requests.get(api_url, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+
+            if data.get('totalItems', 0) > 0:
+                # Iterate through the first few results to find a better match
+                for item in data.get('items', []):
+                    book_info = item.get('volumeInfo', {})
+                    authors_from_api = book_info.get('authors', [])
+
+                    # Check if any author from the API matches the user's input
+                    author_match_found = False
+                    for api_author in authors_from_api:
+                        if user_author_normalized in api_author.lower():
+                            author_match_found = True
+                            break # Found a matching author, no need to check others for this book
+                    
+                    # If we found a matching author, this is likely the correct book.
+                    if author_match_found:
+                        image_links = book_info.get('imageLinks')
+                        if image_links:
+                            image_url = image_links.get('thumbnail') or image_links.get('smallThumbnail')
+                            if image_url:
+                                img_response = requests.get(image_url, timeout=10)
+                                img_response.raise_for_status()
+                                file_name = f"{self.title.replace(' ', '_')}_cover.jpg"
+                                self.cover_image.save(file_name, ContentFile(img_response.content), save=False)
+                                return True # Success, exit the function
+
+        except requests.exceptions.RequestException:
+            # Silently fail if there's a network issue or the API call fails
+            pass
+        return False # Indicate failure
+
+    def generate_cover_from_pdf(self):
+        """
+        Generates a cover image from the first page of the book's PDF file.
+        This is used as a fallback if Google Books API fails.
+        Requires PyMuPDF (fitz) to be installed.
+        """
+        if not fitz or not self.book_file or not self.book_file.name.lower().endswith('.pdf'):
+            return False
+
+        try:
+            # Open the PDF file from storage
+            with self.book_file.open('rb') as file_stream:
+                pdf_document = fitz.open(stream=file_stream.read(), filetype="pdf")
+                
+                if len(pdf_document) > 0:
+                    first_page = pdf_document.load_page(0)
+                    pix = first_page.get_pixmap(dpi=150) # Render page to an image
+                    
+                    # Save the image bytes to a buffer
+                    img_buffer = io.BytesIO(pix.tobytes("png"))
+                    
+                    # Create a file name and save it to the cover_image field
+                    file_name = f"{self.title.replace(' ', '_')}_cover.png"
+                    self.cover_image.save(file_name, ContentFile(img_buffer.getvalue()), save=False)
+                    return True
+        except Exception:
+            # Silently fail if there's an error processing the PDF
+            pass
+        return False
+
+    def save(self, *args, **kwargs):
+        """
+        Overrides the default save method to automatically handle cover images.
+        First, it saves the book (including the file). Then, if it's a new book
+        without a cover, it tries to fetch or generate one and saves again.
+        """
+        # Determine if this is a new instance before the initial save.
+        is_new_instance = self.pk is None
+
+        # Perform the initial save. This is crucial for the file to exist on storage.
+        super().save(*args, **kwargs)
+
+        # If it's a new book and the user did not provide a cover, try to find/generate one.
+        if is_new_instance and not self.cover_image:
+            # Try fetching from Google, if that fails, try generating from PDF.
+            if self.fetch_cover_from_google_books() or self.generate_cover_from_pdf():
+                # If a cover was found, save the instance again, but only update the cover field
+                # to prevent recursion and re-running the whole save method.
+                super().save(update_fields=['cover_image'])
+
+    def get_file_size(self):
+        """Returns the file size in a human-readable format (KB, MB)."""
+        if self.book_file and hasattr(self.book_file, 'size'):
+            size = self.book_file.size
+            if size < 1024:
+                return f"{size} B"
+            elif size < 1024**2:
+                return f"{size/1024:.1f} KB"
+            else:
+                return f"{size/1024**2:.1f} MB"
+        return None
+    get_file_size.short_description = 'File Size'
     
     class Meta:
         verbose_name = "Available Book"

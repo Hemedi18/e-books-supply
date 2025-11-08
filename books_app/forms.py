@@ -16,6 +16,11 @@ class CustomUserCreationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs['placeholder'] = 'Choose a unique username'
         self.fields['email'].widget.attrs['placeholder'] = 'your.email@example.com'
+        # Remove default help texts
+        self.fields['username'].help_text = None
+        self.fields['password2'].help_text = None
+        for field in self.fields.values():
+            field.help_text = None
 
     class Meta(UserCreationForm.Meta):
         model = User

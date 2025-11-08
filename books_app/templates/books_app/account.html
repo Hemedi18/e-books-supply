@@ -32,7 +32,6 @@
     <div id="ProfileSettings" class="tab-content" style="display: block;">
         <div class="account-card">
             <h2>Update Your Profile</h2>
-            <p>Change your username, email, WhatsApp number, or profile picture.</p>
             <div class="styled-form">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -47,7 +46,6 @@
     <div id="ChangePassword" class="tab-content">
         <div class="account-card">
             <h2>Set a New Password</h2>
-            <p>For your security, choose a strong password that you don't use elsewhere.</p>
             <div class="styled-form">
                 <form method="POST">
                     {% csrf_token %}

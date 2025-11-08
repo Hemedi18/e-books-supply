@@ -178,14 +178,18 @@ class BookAvailable(models.Model):
 
     def get_file_size(self):
         """Returns the file size in a human-readable format (KB, MB)."""
-        if self.book_file and hasattr(self.book_file, 'size'):
-            size = self.book_file.size
-            if size < 1024:
-                return f"{size} B"
-            elif size < 1024**2:
-                return f"{size/1024:.1f} KB"
-            else:
-                return f"{size/1024**2:.1f} MB"
+        try:
+            if self.book_file and self.book_file.storage.exists(self.book_file.name):
+                size = self.book_file.size
+                if size < 1024:
+                    return f"{size} B"
+                elif size < 1024**2:
+                    return f"{size/1024:.1f} KB"
+                else:
+                    return f"{size/1024**2:.1f} MB"
+        except (FileNotFoundError, ValueError):
+            # If the file doesn't exist on storage, return None gracefully.
+            return None
         return None
     get_file_size.short_description = 'File Size'
     

@@ -44,13 +44,13 @@
     <!-- Floating Action Buttons for this page -->
     <div class="page-fab-group">
         <a href="{% url 'books_app:home' %}" class="fab secondary" title="Back to Library">
-            <lord-icon src="https://cdn.lordicon.com/undjovds.json" trigger="hover" colors="primary:var(--text-color)" style="width:48px;height:48px"></lord-icon>
+            Back to Library
         </a>
         <a href="{% url 'books_app:upload_book' %}" class="fab" title="Contribute a New Book">
-            <span class="fab-symbol">+</span>
+            Contribute
         </a>
         <a href="{% url 'books_app:download_book' pk=book.pk %}" class="fab primary download-button" title="Download Book">
-            <lord-icon src="https://cdn.lordicon.com/gqjpawbc.json" trigger="hover" colors="primary:#ffffff" style="width:48px;height:48px"></lord-icon>
+            Download
         </a>
     </div>
 {% endblock %}

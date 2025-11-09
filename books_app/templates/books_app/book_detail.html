@@ -29,17 +29,28 @@
             </div>
         </div>
     </div>
+
+    <!-- Right Panel: Book Preview -->
+    <div class="book-preview-panel">
+        {% if book.book_file and book.book_file.url|slice:"-4:" == ".pdf" %}
+            <iframe src="{{ book.book_file.url }}" width="100%" height="100%" title="PDF Preview for {{ book.title }}"></iframe>
+        {% endif %}
+    </div>
 </div>
 
-<!-- Floating Action Buttons for this page -->
-<div class="page-fab-group">
-    <a href="{% url 'books_app:home' %}" class="fab secondary" title="Back to Library">
-        <lord-icon src="https://cdn.lordicon.com/undjovds.json" trigger="hover" colors="primary:var(--text-color)" style="width:48px;height:48px"></lord-icon>
-    </a>
-    <a href="{% url 'books_app:download_book' pk=book.pk %}" class="fab primary download-button" title="Download Book">
-        📥
-    </a>
-</div>
 {% endblock %}
 
-{% block extra_js %}{% endblock %}
+{% block extra_js %}
+    <!-- Floating Action Buttons for this page -->
+    <div class="page-fab-group">
+        <a href="{% url 'books_app:home' %}" class="fab secondary" title="Back to Library">
+            <lord-icon src="https://cdn.lordicon.com/undjovds.json" trigger="hover" colors="primary:var(--text-color)" style="width:48px;height:48px"></lord-icon>
+        </a>
+        <a href="{% url 'books_app:upload_book' %}" class="fab" title="Contribute a New Book">
+            <span class="fab-symbol">+</span>
+        </a>
+        <a href="{% url 'books_app:download_book' pk=book.pk %}" class="fab primary download-button" title="Download Book">
+            <lord-icon src="https://cdn.lordicon.com/gqjpawbc.json" trigger="hover" colors="primary:#ffffff" style="width:48px;height:48px"></lord-icon>
+        </a>
+    </div>
+{% endblock %}

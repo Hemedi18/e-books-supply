@@ -338,7 +338,7 @@ a:hover {
     border-radius: 8px;
     background: var(--background-color);
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     text-align: center;
 }
 
@@ -371,7 +371,6 @@ a:hover {
     color: var(--primary-color);
     /* Prevent long titles from breaking the layout */
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limit to 2 lines */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -415,12 +414,15 @@ a:hover {
     align-items: center;
     justify-content: center;
     border-radius: 8px; /* Make them slightly rounded squares */
-    font-size: 1.5rem; /* Increase font size for emoji */
+}
+.book-actions .button-link lord-icon {
+    width: 100% !important; /* Force icon to fill the button */
+    height: 100% !important;
 }
 .book-actions .button-link.preview {
     background-color: transparent;
     border: 1px solid var(--primary-color);
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
 }
 .book-actions .button-link.preview:hover {
     background-color: var(--primary-color);
@@ -585,6 +587,13 @@ a:hover {
     font-size: 0.9em;
 }
 
+/* Style for Django form errors */
+.errorlist {
+    list-style-type: none;
+    padding: 0;
+    color: #dc3545; /* Red color for errors */
+    font-size: 0.9em;
+}
 /* --- MY REQUESTS LIST STYLES --- */
 .requests-container {
     margin-top: 2.5rem;
@@ -831,7 +840,7 @@ a:hover {
 }
 
 .book-info-panel {
-    flex: 1 1 320px; /* Allow shrinking but prefer 320px */
+    flex: 0 0 320px; /* Fixed width, doesn't grow or shrink */
     display: flex;
     flex-direction: column;
 }
@@ -855,7 +864,7 @@ a:hover {
 }
 
 .book-info-text {
-    text-align: left; /* Align all text to the left */
+    text-align: center; /* Center text under the cover */
     width: 100%;
 }
 
@@ -878,16 +887,22 @@ a:hover {
 }
 .meta-tag {
     background-color: rgba(var(--primary-color), 0.1);
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
     padding: 0.5rem 0.8rem; /* Increased padding */
     border-radius: 15px;
     font-size: 0.9rem; /* Slightly larger font */
     font-weight: bold;
 }
 .meta-tag.icon-tag {
-    display: inline-flex; /* Keep for alignment */
-    align-items: center; /* Keep for alignment */
-    gap: 0.5rem; /* Adjust gap for emoji */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.meta-tag .icon-svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--primary-color);
+    stroke-width: 2.5;
 }
 
 .book-info-panel .button-link {
@@ -911,4 +926,53 @@ a:hover {
     flex-grow: 1;
     border-left: 1px solid var(--border-color);
     padding-left: 2rem;
+}
+
+.page-fab-group {
+    position: sticky;
+    bottom: 0;
+}
+
+.button-group-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+/* --- RESPONSIVE BOOK DETAIL PAGE --- */
+@media (max-width: 992px) { /* Breakpoint for tablets and below */
+    .book-detail-container {
+        flex-direction: column; /* Stack panels vertically */
+        height: auto; /* Let content define height */
+    }
+    .book-info-panel {
+        flex: 1 1 auto; /* Allow panel to take full width */
+        align-items: center; /* Center content horizontally */
+    }
+    .book-preview-panel {
+        flex-grow: 1;
+        border-left: none; /* Remove vertical line */
+        border-top: 1px solid var(--border-color); /* Add horizontal line */
+        padding-left: 0;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        height: 70vh; /* Ensure iframe is tall enough on mobile */
+    }
+}
+
+/* --- SVG Icon Styling --- */
+.icon-svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 2.5; /* Make lines thicker */
+}
+.download-button .icon-svg {
+    stroke: white;
+}
+.fab.secondary .icon-svg {
+    stroke: var(--text-color);
+}
+.fab .icon-svg {
+    width: 32px;
+    height: 32px;
 }

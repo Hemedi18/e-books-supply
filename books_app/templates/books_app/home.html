@@ -44,7 +44,8 @@
             <!-- Action buttons -->
             <div class="book-actions">
                 <div class="action-item">
-                    <a href="{{ book.book_file.url }}" class="button-link preview" title="Preview in new tab" target="_blank">👁️
+                    <a href="{% url 'books_app:book_detail' pk=book.pk %}" class="button-link preview" title="View Details & Preview">
+                        <lord-icon src="https://cdn.lordicon.com/tyounuzx.json" trigger="hover" colors="primary:var(--primary-color),secondary:var(--accent-color)" style="width:40px;height:40px"></lord-icon>
                     </a>
                     <span class="action-count">{{ book.view_count }} views</span>
                 </div>

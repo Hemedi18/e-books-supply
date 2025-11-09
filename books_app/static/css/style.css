@@ -415,16 +415,12 @@ a:hover {
     align-items: center;
     justify-content: center;
     border-radius: 8px; /* Make them slightly rounded squares */
-}
-.book-actions .button-link lord-icon,
-.book-actions .button-link .icon-svg {
-    width: 100% !important; /* Force icon to fill the button */
-    height: 100% !important;
+    font-size: 1.5rem; /* Increase font size for emoji */
 }
 .book-actions .button-link.preview {
     background-color: transparent;
     border: 1px solid var(--primary-color);
-    color: var(--primary-color) !important;
+    color: var(--primary-color);
 }
 .book-actions .button-link.preview:hover {
     background-color: var(--primary-color);
@@ -889,15 +885,9 @@ a:hover {
     font-weight: bold;
 }
 .meta-tag.icon-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-.meta-tag .icon-svg {
-    width: 20px;
-    height: 20px;
-    stroke: var(--primary-color);
-    stroke-width: 2.5;
+    display: inline-flex; /* Keep for alignment */
+    align-items: center; /* Keep for alignment */
+    gap: 0.5rem; /* Adjust gap for emoji */
 }
 
 .book-info-panel .button-link {
@@ -921,21 +911,4 @@ a:hover {
     flex-grow: 1;
     border-left: 1px solid var(--border-color);
     padding-left: 2rem;
-}
-
-/* --- SVG Icon Styling --- */
-.icon-svg {
-    width: 28px;
-    height: 28px;
-    stroke-width: 2.5; /* Make lines thicker */
-}
-.download-button .icon-svg {
-    stroke: white;
-}
-.fab.secondary .icon-svg {
-    stroke: var(--text-color);
-}
-.fab .icon-svg {
-    width: 32px;
-    height: 32px;
 }

@@ -44,17 +44,14 @@
             <!-- Action buttons -->
             <div class="book-actions">
                 <div class="action-item">
-                    <a href="{{ book.book_file.url }}" class="button-link preview" title="Preview in new tab" target="_blank">
-                        <lord-icon src="https://cdn.lordicon.com/tyounuzx.json" trigger="hover" colors="primary:var(--primary-color),secondary:var(--accent-color)" style="width:40px;height:40px"></lord-icon>
+                    <a href="{{ book.book_file.url }}" class="button-link preview" title="Preview in new tab" target="_blank">👁️
                     </a>
                     <span class="action-count">{{ book.view_count }} views</span>
                 </div>
                 <div class="action-item">
                     {% if book.book_file %}
                         <a href="{% url 'books_app:download_book' pk=book.pk %}" class="button-link download-button" title="Download">
-                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
+                            📥
                         </a>
                         <span class="action-count">{{ book.download_count }} downloads</span>
                     {% endif %}

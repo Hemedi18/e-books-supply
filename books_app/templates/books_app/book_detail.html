@@ -21,12 +21,10 @@
             <div class="book-meta-tags">
                 {% if book.get_file_size %}<span class="meta-tag">Size: {{ book.get_file_size }}</span>{% endif %}
                 <span class="meta-tag icon-tag">
-                    <lord-icon src="https://cdn.lordicon.com/tyounuzx.json" trigger="loop" delay="2000" colors="primary:var(--primary-color)" style="width:28px;height:28px"></lord-icon>
+                    👁️
                     {{ book.view_count }} Views</span>
                 <span class="meta-tag icon-tag">
-                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
+                    📥
                     {{ book.download_count }} Downloads</span>
             </div>
         </div>
@@ -39,9 +37,7 @@
         <lord-icon src="https://cdn.lordicon.com/undjovds.json" trigger="hover" colors="primary:var(--text-color)" style="width:48px;height:48px"></lord-icon>
     </a>
     <a href="{% url 'books_app:download_book' pk=book.pk %}" class="fab primary download-button" title="Download Book">
-        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
+        📥
     </a>
 </div>
 {% endblock %}

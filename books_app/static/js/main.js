@@ -27,24 +27,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. THEME TOGGLE (Dark/Light Mode)
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
-    const sunIcon = document.querySelector('.sun-icon');
-    const moonIcon = document.querySelector('.moon-icon');
 
     // Angalia Theme kutoka Local Storage au tumia default Light
     const savedTheme = localStorage.getItem('theme') || 'light';
     body.setAttribute('data-theme', savedTheme);
     
-    const updateIcons = (theme) => {
-        if (theme === 'dark') {
-            sunIcon.style.display = 'none';
-            moonIcon.style.display = 'inline';
-        } else {
-            sunIcon.style.display = 'inline';
-            moonIcon.style.display = 'none';
-        }
+    const updateEmoji = (theme) => {
+        if (themeToggle) themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
     };
     
-    updateIcons(savedTheme);
+    updateEmoji(savedTheme);
 
     if (themeToggle) {
         themeToggle.addEventListener('click', function() {
@@ -54,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             
-            updateIcons(newTheme);
+            updateEmoji(newTheme);
         });
     }
 });
